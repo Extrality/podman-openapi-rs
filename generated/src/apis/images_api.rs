@@ -10,10 +10,13 @@
 
 use super::{configuration, ContentType, Error};
 use crate::{apis::ResponseContent, models};
+use futures_util::stream::Stream;
+use futures_util::StreamExt;
 use reqwest;
 use serde::{de::Error as _, Deserialize, Serialize};
+use std::pin::Pin;
 use tokio::fs::File as TokioFile;
-use tokio_util::codec::{BytesCodec, FramedRead};
+use tokio_util::codec::{BytesCodec, FramedRead, LinesCodec};
 
 /// struct for typed successes of method [`image_build_libpod`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -1182,6 +1185,7 @@ pub async fn image_prune_libpod(
 }
 
 /// Pull one or more images from a container registry.
+/// Returns a stream of updates as the image is being pulled.
 pub async fn image_pull_libpod(
     configuration: &configuration::Configuration,
     reference: Option<&str>,
@@ -1194,7 +1198,15 @@ pub async fn image_pull_libpod(
     tls_verify: Option<bool>,
     all_tags: Option<bool>,
     x_registry_auth: Option<&str>,
-) -> Result<ResponseContent<ImagePullLibpodSuccess>, Error<ImagePullLibpodError>> {
+) -> Result<
+    Pin<
+        Box<
+            dyn Stream<Item = Result<models::LibpodImagesPullReport, Error<ImagePullLibpodError>>>
+                + Send,
+        >,
+    >,
+    Error<ImagePullLibpodError>,
+> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_query_reference = reference;
     let p_query_quiet = quiet;
@@ -1252,13 +1264,21 @@ pub async fn image_pull_libpod(
     let status = resp.status();
 
     if !status.is_client_error() && !status.is_server_error() {
-        let content = resp.text().await?;
-        let entity: Option<ImagePullLibpodSuccess> = serde_json::from_str(&content).ok();
-        Ok(ResponseContent {
-            status,
-            content,
-            entity,
-        })
+        let byte_stream = resp.bytes_stream();
+        let reader = tokio_util::io::StreamReader::new(
+            byte_stream.map(|result| result.map_err(std::io::Error::other)),
+        );
+
+        let lines = FramedRead::new(reader, LinesCodec::new());
+
+        let stream = lines.map(|line_result| match line_result {
+            Ok(line) => {
+                serde_json::from_str::<models::LibpodImagesPullReport>(&line).map_err(Error::Serde)
+            }
+            Err(e) => Err(Error::Io(std::io::Error::other(e))),
+        });
+
+        Ok(Box::pin(stream))
     } else {
         let content = resp.text().await?;
         let entity: Option<ImagePullLibpodError> = serde_json::from_str(&content).ok();
