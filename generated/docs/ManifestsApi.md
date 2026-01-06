@@ -5,7 +5,7 @@ All URIs are relative to *http://podman.io*
 Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**manifest_add_libpod**](ManifestsApi.md#manifest_add_libpod) | **POST** /libpod/manifests/{name}/add | Add image
-[**manifest_create_libpod**](ManifestsApi.md#manifest_create_libpod) | **POST** /libpod/manifests/{name} | Create
+[**manifest_create_libpod**](ManifestsApi.md#manifest_create_libpod) | **POST** /libpod/manifests | Create
 [**manifest_delete_libpod**](ManifestsApi.md#manifest_delete_libpod) | **DELETE** /libpod/manifests/{name} | Delete manifest list
 [**manifest_exists_libpod**](ManifestsApi.md#manifest_exists_libpod) | **GET** /libpod/manifests/{name}/exists | Exists
 [**manifest_inspect_libpod**](ManifestsApi.md#manifest_inspect_libpod) | **GET** /libpod/manifests/{name}/json | Inspect
@@ -48,7 +48,7 @@ No authorization required
 
 ## manifest_create_libpod
 
-> models::IdResponse manifest_create_libpod(name, images, all, amend, options)
+> models::IdResponse manifest_create_libpod(name, images, all, options)
 Create
 
 Create a manifest list
@@ -61,7 +61,6 @@ Name | Type | Description  | Required | Notes
 **name** | **String** | manifest list or index name to create | [required] |
 **images** | **String** | One or more names of an image or a manifest list. Repeat parameter as needed.  Support for multiple images, as of version 4.0.0 Alias of `image` is support for compatibility with < 4.0.0 Response status code is 200 with < 4.0.0 for compatibility  | [required] |
 **all** | Option<**bool**> | add all contents if given list |  |
-**amend** | Option<**bool**> | modify an existing list if one with the desired name already exists |  |
 **options** | Option<[**ManifestModifyOptions**](ManifestModifyOptions.md)> | options for new manifest |  |
 
 ### Return type
@@ -82,7 +81,7 @@ No authorization required
 
 ## manifest_delete_libpod
 
-> models::LibpodImagesRemoveReport manifest_delete_libpod(name, ignore)
+> models::LibpodImagesRemoveReport manifest_delete_libpod(name)
 Delete manifest list
 
 Delete named manifest list  As of v4.0.0 
@@ -93,7 +92,6 @@ Delete named manifest list  As of v4.0.0
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
 **name** | **String** | The name or ID of the  list to be deleted | [required] |
-**ignore** | Option<**bool**> | Ignore if a specified manifest does not exist and do not throw an error. |  |
 
 ### Return type
 
@@ -143,7 +141,7 @@ No authorization required
 
 ## manifest_inspect_libpod
 
-> models::Schema2ListPublic manifest_inspect_libpod(name, tls_verify)
+> models::Schema2List manifest_inspect_libpod(name)
 Inspect
 
 Display attributes of given manifest list
@@ -154,11 +152,10 @@ Display attributes of given manifest list
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
 **name** | **String** | the name or ID of the manifest list | [required] |
-**tls_verify** | Option<**bool**> | Require HTTPS and verify signatures when contacting registries. |  |[default to true]
 
 ### Return type
 
-[**models::Schema2ListPublic**](Schema2ListPublic.md)
+[**models::Schema2List**](Schema2List.md)
 
 ### Authorization
 
@@ -174,7 +171,7 @@ No authorization required
 
 ## manifest_modify_libpod
 
-> models::ManifestModifyReport manifest_modify_libpod(name, options, tls_verify)
+> models::ManifestModifyReport manifest_modify_libpod(name, options)
 Modify manifest list
 
 Add/Remove an image(s) to a manifest list  Note: operations are not atomic when multiple Images are provided.  As of v4.0.0 
@@ -186,7 +183,6 @@ Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
 **name** | **String** | the name or ID of the manifest | [required] |
 **options** | [**ManifestModifyOptions**](ManifestModifyOptions.md) | options for mutating a manifest | [required] |
-**tls_verify** | Option<**bool**> | Require HTTPS and verify signatures when contacting registries. |  |[default to true]
 
 ### Return type
 
@@ -206,7 +202,7 @@ No authorization required
 
 ## manifest_push_libpod
 
-> models::IdResponse manifest_push_libpod(name, destination, add_compression, force_compression_format, all, tls_verify, quiet)
+> models::IdResponse manifest_push_libpod(name, destination, all, tls_verify)
 Push manifest list to registry
 
 Push a manifest list or image index to the named registry  As of v4.0.0 
@@ -218,11 +214,8 @@ Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
 **name** | **String** | the name or ID of the manifest list | [required] |
 **destination** | **String** | the registry for the manifest list | [required] |
-**add_compression** | Option<[**Vec<String>**](String.md)> | add existing instances with requested compression algorithms to manifest list |  |
-**force_compression_format** | Option<**bool**> | Enforce compressing the layers with the specified --compression and do not reuse differently compressed blobs on the registry. |  |[default to false]
-**all** | Option<**bool**> | push all images |  |[default to true]
-**tls_verify** | Option<**bool**> | Require HTTPS and verify signatures when contacting registries. |  |[default to true]
-**quiet** | Option<**bool**> | silences extra stream data on push |  |[default to true]
+**all** | Option<**bool**> | push all images |  |[default to false]
+**tls_verify** | Option<**bool**> | skip TLS verification for registries |  |[default to false]
 
 ### Return type
 

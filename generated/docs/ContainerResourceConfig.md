@@ -4,7 +4,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**intel_rdt** | Option<[**models::LinuxIntelRdt**](LinuxIntelRdt.md)> |  | [optional]
+**cpu_period** | Option<**i32**> | CPU period of the cpuset, determined by --cpus | [optional]
+**cpu_quota** | Option<**i64**> | CPU quota of the cpuset, determined by --cpus | [optional]
 **oom_score_adj** | Option<**i64**> | OOMScoreAdj adjusts the score used by the OOM killer to determine processes to kill for the container's process. Optional. | [optional]
 **r_limits** | Option<[**Vec<models::PosixRlimit>**](POSIXRlimit.md)> | Rlimits are POSIX rlimits to apply to the container. Optional. | [optional]
 **resource_limits** | Option<[**models::LinuxResources**](LinuxResources.md)> |  | [optional]

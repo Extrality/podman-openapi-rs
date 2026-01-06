@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**file_mode** | Option<**i32**> | The bits have the same definition on all systems, so that information about files can be moved from one system to another portably. Not all bits apply to all systems. The only required bit is [ModeDir] for directories. | [optional]
+**file_mode** | Option<**i32**> | The bits have the same definition on all systems, so that information about files can be moved from one system to another portably. Not all bits apply to all systems. The only required bit is ModeDir for directories. | [optional]
 **gid** | Option<**i32**> | Gid of the device. | [optional]
 **major** | Option<**i64**> | Major is the device's major number. | [optional]
 **minor** | Option<**i64**> | Minor is the device's minor number. | [optional]

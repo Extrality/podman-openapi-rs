@@ -4,7 +4,7 @@ All URIs are relative to *http://podman.io*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**image_build_libpod**](ImagesApi.md#image_build_libpod) | **POST** /libpod/build | Build image
+[**image_build_libpod**](ImagesApi.md#image_build_libpod) | **POST** /libpod/build | Create image
 [**image_changes_libpod**](ImagesApi.md#image_changes_libpod) | **GET** /libpod/images/{name}/changes | Report on changes to images's filesystem; adds, deletes or modifications.
 [**image_delete_all_libpod**](ImagesApi.md#image_delete_all_libpod) | **DELETE** /libpod/images/remove | Remove one or more images from the storage.
 [**image_delete_libpod**](ImagesApi.md#image_delete_libpod) | **DELETE** /libpod/images/{name} | Remove an image from the local storage.
@@ -19,21 +19,17 @@ Method | HTTP request | Description
 [**image_prune_libpod**](ImagesApi.md#image_prune_libpod) | **POST** /libpod/images/prune | Prune unused images
 [**image_pull_libpod**](ImagesApi.md#image_pull_libpod) | **POST** /libpod/images/pull | Pull images
 [**image_push_libpod**](ImagesApi.md#image_push_libpod) | **POST** /libpod/images/{name}/push | Push Image
-[**image_resolve_libpod**](ImagesApi.md#image_resolve_libpod) | **GET** /libpod/images/{name}/resolve | Resolve an image (short) name
-[**image_scp_libpod**](ImagesApi.md#image_scp_libpod) | **POST** /libpod/images/scp/{name} | Copy an image from one host to another
 [**image_search_libpod**](ImagesApi.md#image_search_libpod) | **GET** /libpod/images/search | Search images
 [**image_tag_libpod**](ImagesApi.md#image_tag_libpod) | **POST** /libpod/images/{name}/tag | Tag an image
 [**image_tree_libpod**](ImagesApi.md#image_tree_libpod) | **GET** /libpod/images/{name}/tree | Image tree
 [**image_untag_libpod**](ImagesApi.md#image_untag_libpod) | **POST** /libpod/images/{name}/untag | Untag an image
-[**local_build_libpod**](ImagesApi.md#local_build_libpod) | **POST** /libpod/local/build | Create image from local build context
-[**local_images_libpod**](ImagesApi.md#local_images_libpod) | **POST** /libpod/local/images/load | Load image from local path
 
 
 
 ## image_build_libpod
 
-> models::ImageBuildLibpod200Response image_build_libpod(content_type, x_registry_config, dockerfile, t, allplatforms, additionalbuildcontexts, extrahosts, nohosts, remote, q, compatvolumes, createdannotation, sourcedateepoch, rewritetimestamp, timestamp, inheritlabels, inheritannotations, nocache, cachefrom, pull, rm, forcerm, memory, memswap, cpushares, cpusetcpus, cpuperiod, cpuquota, buildargs, shmsize, squash, labels, layer_label, layers, networkmode, platform, target, outputs, httpproxy, unsetenv, unsetlabel, unsetannotation, volume, manifest)
-Build image
+> models::ImageBuildLibpod200Response image_build_libpod(dockerfile, t, allplatforms, extrahosts, remote, q, nocache, cachefrom, pull, rm, forcerm, memory, memswap, cpushares, cpusetcpus, cpuperiod, cpuquota, buildargs, shmsize, squash, labels, layers, networkmode, platform, target, outputs, httpproxy, unsetenv)
+Create image
 
 Build an image from the given Dockerfile(s)
 
@@ -42,23 +38,12 @@ Build an image from the given Dockerfile(s)
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**content_type** | Option<**String**> |  |  |[default to application/x-tar]
-**x_registry_config** | Option<**String**> |  |  |
 **dockerfile** | Option<**String**> | Path within the build context to the `Dockerfile`. This is ignored if remote is specified and points to an external `Dockerfile`.  |  |[default to Dockerfile]
-**t** | Option<**String**> | A name and optional tag to apply to the image in the `name:tag` format.  If you omit the tag, the default latest value is assumed. You can provide several t parameters. |  |[default to latest]
+**t** | Option<**String**> | A name and optional tag to apply to the image in the `name:tag` format.  If you omit the tag the default latest value is assumed. You can provide several t parameters. |  |[default to latest]
 **allplatforms** | Option<**bool**> | Instead of building for a set of platforms specified using the platform option, inspect the build's base images, and build for all of the platforms that are available.  Stages that use *scratch* as a starting point can not be inspected, so at least one non-*scratch* stage must be present for detection to work usefully.  |  |[default to false]
-**additionalbuildcontexts** | Option<[**Vec<String>**](String.md)> | Additional build contexts for builds that require more than one context. Each additional context must be specified as a key-value pair in the format \"name=value\".  The value can be specified in two formats: - URL context: Use the prefix \"url:\" followed by a URL to a tar archive   Example: \"mycontext=url:https://example.com/context.tar\" - Image context: Use the prefix \"image:\" followed by an image reference   Example: \"mycontext=image:alpine:latest\" or \"mycontext=image:docker.io/library/ubuntu:22.04\"  Local contexts are provided via multipart/form-data upload. When using multipart/form-data, include additional build contexts as separate form fields with names prefixed by \"build-context-\". For example, a local context named \"mycontext\" should be uploaded as a tar file in a field named \"build-context-mycontext\".  (As of version 5.6.0)  |  |[default to []]
 **extrahosts** | Option<**String**> | TBD Extra hosts to add to /etc/hosts (As of version 1.xx)  |  |
-**nohosts** | Option<**bool**> | Not to create /etc/hosts when building the image  |  |
 **remote** | Option<**String**> | A Git repository URI or HTTP/HTTPS context URI. If the URI points to a single text file, the file’s contents are placed into a file called Dockerfile and the image is built from that file. If the URI points to a tarball, the file is downloaded by the daemon and the contents therein used as the context for the build. If the URI points to a tarball and the dockerfile parameter is also specified, there must be a file with the corresponding path inside the tarball. (As of version 1.xx)  |  |
 **q** | Option<**bool**> | Suppress verbose build output  |  |[default to false]
-**compatvolumes** | Option<**bool**> | Contents of volume locations to be modified on ADD or COPY only (As of Podman version v5.2)  |  |[default to false]
-**createdannotation** | Option<**bool**> | Add an \"org.opencontainers.image.created\" annotation to the image. (As of Podman version v5.6)  |  |[default to true]
-**sourcedateepoch** | Option<**f64**> | Timestamp to use for newly-added history entries and the image's creation date. (As of Podman version v5.6)  |  |
-**rewritetimestamp** | Option<**bool**> | If sourcedateepoch is set, force new content added in layers to have timestamps no later than the sourcedateepoch date. (As of Podman version v5.6)  |  |[default to false]
-**timestamp** | Option<**f64**> | Timestamp to use for newly-added history entries, the image's creation date, and for new content added in layers.  |  |
-**inheritlabels** | Option<**bool**> | Inherit the labels from the base image or base stages (As of Podman version v5.5)  |  |[default to true]
-**inheritannotations** | Option<**bool**> | Inherit the annotations from the base image or base stages (As of Podman version v5.6)  |  |[default to true]
 **nocache** | Option<**bool**> | Do not use the cache when building the image (As of version 1.xx)  |  |[default to false]
 **cachefrom** | Option<**String**> | JSON array of images used to build cache resolution (As of version 1.xx)  |  |
 **pull** | Option<**bool**> | Attempt to pull the image even if an older image exists locally (As of version 1.xx)  |  |[default to false]
@@ -74,7 +59,6 @@ Name | Type | Description  | Required | Notes
 **shmsize** | Option<**i32**> | ShmSize is the \"size\" value to use when mounting an shmfs on the container's /dev/shm directory. Default is 64MB (As of version 1.xx)  |  |[default to 67108864]
 **squash** | Option<**bool**> | Silently ignored. Squash the resulting images layers into a single layer (As of version 1.xx)  |  |[default to false]
 **labels** | Option<**String**> | JSON map of key, value pairs to set as labels on the new image (As of version 1.xx)  |  |
-**layer_label** | Option<[**Vec<String>**](String.md)> | Add an intermediate image *label* (e.g. label=*value*) to the intermediate image metadata. |  |
 **layers** | Option<**bool**> | Cache intermediate layers during build. (As of version 1.xx)  |  |[default to true]
 **networkmode** | Option<**String**> | Sets the networking mode for the run commands during build. Supported standard values are:   * `bridge` limited to containers within a single host, port mapping required for external access   * `host` no isolation between host and containers on this network   * `none` disable all networking for this container   * container:<nameOrID> share networking with given container   ---All other values are assumed to be a custom network's name (As of version 1.xx)  |  |[default to bridge]
 **platform** | Option<**String**> | Platform format os[/arch[/variant]] (As of version 1.xx)  |  |
@@ -82,10 +66,6 @@ Name | Type | Description  | Required | Notes
 **outputs** | Option<**String**> | output configuration TBD (As of version 1.xx)  |  |
 **httpproxy** | Option<**bool**> | Inject http proxy environment variables into container (As of version 2.0.0)  |  |
 **unsetenv** | Option<[**Vec<String>**](String.md)> | Unset environment variables from the final image. |  |
-**unsetlabel** | Option<[**Vec<String>**](String.md)> | Unset the image label, causing the label not to be inherited from the base image. |  |
-**unsetannotation** | Option<[**Vec<String>**](String.md)> | Unset the image annotation, causing the annotation not to be inherited from the base image. (As of Podman version v5.6)  |  |
-**volume** | Option<[**Vec<String>**](String.md)> | Extra volumes that should be mounted in the build container. |  |
-**manifest** | Option<**String**> | Add the image to the specified manifest list. Creates a manifest list if it does not exist.  |  |
 
 ### Return type
 
@@ -108,7 +88,7 @@ No authorization required
 > image_changes_libpod(name, parent, diff_type)
 Report on changes to images's filesystem; adds, deletes or modifications.
 
-Returns which files in an image's filesystem have been added, deleted, or modified. The Kind of modification can be one of:  0: Modified 1: Added 2: Deleted 
+Returns which files in a images's filesystem have been added, deleted, or modified. The Kind of modification can be one of:  0: Modified 1: Added 2: Deleted 
 
 ### Parameters
 
@@ -137,7 +117,7 @@ No authorization required
 
 ## image_delete_all_libpod
 
-> models::LibpodImagesRemoveReport image_delete_all_libpod(images, all, force, ignore, lookup_manifest)
+> models::LibpodImagesRemoveReport image_delete_all_libpod(images, all, force)
 Remove one or more images from the storage.
 
 Remove one or more images from the storage.
@@ -150,8 +130,6 @@ Name | Type | Description  | Required | Notes
 **images** | Option<[**Vec<String>**](String.md)> | Images IDs or names to remove. |  |
 **all** | Option<**bool**> | Remove all images. |  |[default to true]
 **force** | Option<**bool**> | Force image removal (including containers using the images). |  |
-**ignore** | Option<**bool**> | Ignore if a specified image does not exist and do not throw an error. |  |
-**lookup_manifest** | Option<**bool**> | Resolves to manifest list instead of image. |  |
 
 ### Return type
 
@@ -297,7 +275,7 @@ No authorization required
 
 ## image_history_libpod
 
-> models::HistoryResponse image_history_libpod(name)
+> models::ImageHistory200Response image_history_libpod(name)
 History of an image
 
 Return parent layers of an image.
@@ -311,7 +289,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**models::HistoryResponse**](HistoryResponse.md)
+[**models::ImageHistory200Response**](ImageHistory_200_response.md)
 
 ### Authorization
 
@@ -362,7 +340,7 @@ No authorization required
 
 ## image_inspect_libpod
 
-> models::ImageData image_inspect_libpod(name)
+> models::ImageInspectLibpod200Response image_inspect_libpod(name)
 Inspect an image
 
 Obtain low-level information about an image
@@ -376,7 +354,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**models::ImageData**](ImageData.md)
+[**models::ImageInspectLibpod200Response**](ImageInspectLibpod_200_response.md)
 
 ### Authorization
 
@@ -453,7 +431,7 @@ No authorization required
 
 ## image_prune_libpod
 
-> Vec<models::PruneReport> image_prune_libpod(all, external, buildcache, filters)
+> Vec<models::LibpodContainersPruneReport> image_prune_libpod(all, external, filters)
 Prune unused images
 
 Remove images that are not being used by a container
@@ -465,12 +443,11 @@ Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
 **all** | Option<**bool**> | Remove all images not in use by containers, not just dangling ones  |  |[default to false]
 **external** | Option<**bool**> | Remove images even when they are used by external containers (e.g, by build containers)  |  |[default to false]
-**buildcache** | Option<**bool**> | Remove persistent build cache created by build instructions such as `--mount=type=cache`.  |  |[default to false]
 **filters** | Option<**String**> | filters to apply to image pruning, encoded as JSON (map[string][]string). Available filters:   - `dangling=<boolean>` When set to `true` (or `1`), prune only      unused *and* untagged images. When set to `false`      (or `0`), all unused images are pruned.   - `until=<string>` Prune images created before this timestamp. The `<timestamp>` can be Unix timestamps, date formatted timestamps, or Go duration strings (e.g. `10m`, `1h30m`) computed relative to the daemon machine’s time.   - `label` (`label=<key>`, `label=<key>=<value>`, `label!=<key>`, or `label!=<key>=<value>`) Prune images with (or without, in case `label!=...` is used) the specified labels.  |  |
 
 ### Return type
 
-[**Vec<models::PruneReport>**](PruneReport.md)
+[**Vec<models::LibpodContainersPruneReport>**](LibpodContainersPruneReport.md)
 
 ### Authorization
 
@@ -486,7 +463,7 @@ No authorization required
 
 ## image_pull_libpod
 
-> models::LibpodImagesPullReport image_pull_libpod(reference, quiet, compat_mode, arch, os, variant, policy, tls_verify, all_tags, x_registry_auth)
+> models::LibpodImagesPullReport image_pull_libpod(reference, quiet, credentials, arch, os, variant, policy, tls_verify, all_tags, x_registry_auth)
 Pull images
 
 Pull one or more images from a container registry.
@@ -498,7 +475,7 @@ Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
 **reference** | Option<**String**> | Mandatory reference to the image (e.g., quay.io/image/name:tag) |  |
 **quiet** | Option<**bool**> | silences extra stream data on pull |  |[default to false]
-**compat_mode** | Option<**bool**> | Return the same JSON payload as the Docker-compat endpoint. |  |[default to false]
+**credentials** | Option<**String**> | username:password for the registry |  |
 **arch** | Option<**String**> | Pull image for the specified architecture. |  |
 **os** | Option<**String**> | Pull image for the specified operating system. |  |
 **variant** | Option<**String**> | Pull image for the specified variant. |  |
@@ -525,7 +502,7 @@ No authorization required
 
 ## image_push_libpod
 
-> std::path::PathBuf image_push_libpod(name, destination, force_compression_format, compression_format, compression_level, tls_verify, quiet, format, all, remove_signatures, retry, retry_delay, x_registry_auth)
+> std::path::PathBuf image_push_libpod(name, destination, tls_verify, x_registry_auth)
 Push Image
 
 Push an image to a container registry
@@ -537,83 +514,12 @@ Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
 **name** | **String** | Name of image to push. | [required] |
 **destination** | Option<**String**> | Allows for pushing the image to a different destination than the image refers to. |  |
-**force_compression_format** | Option<**bool**> | Enforce compressing the layers with the specified --compression and do not reuse differently compressed blobs on the registry. |  |[default to false]
-**compression_format** | Option<**String**> | Compression format used to compress image layers. |  |
-**compression_level** | Option<**i32**> | Compression level used to compress image layers. |  |
 **tls_verify** | Option<**bool**> | Require TLS verification. |  |[default to true]
-**quiet** | Option<**bool**> | Silences extra stream data on push. |  |[default to true]
-**format** | Option<**String**> | Manifest type (oci, v2s1, or v2s2) to use when pushing an image. Default is manifest type of source, with fallbacks. |  |
-**all** | Option<**bool**> | All indicates whether to push all images related to the image list. |  |
-**remove_signatures** | Option<**bool**> | Discard any pre-existing signatures in the image. |  |
-**retry** | Option<**i32**> | Number of times to retry push in case of failure. |  |
-**retry_delay** | Option<**String**> | Delay between retries in case of push failures. Duration format such as \"412ms\", or \"3.5h\". |  |
 **x_registry_auth** | Option<**String**> | A base64-encoded auth configuration. |  |
 
 ### Return type
 
 [**std::path::PathBuf**](std::path::PathBuf.md)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
-- **Content-Type**: Not defined
-- **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-
-## image_resolve_libpod
-
-> image_resolve_libpod(name)
-Resolve an image (short) name
-
-Resolve the passed image name to a list of fully-qualified images referring to container registries.
-
-### Parameters
-
-
-Name | Type | Description  | Required | Notes
-------------- | ------------- | ------------- | ------------- | -------------
-**name** | **String** | the (short) name to resolve | [required] |
-
-### Return type
-
- (empty response body)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
-- **Content-Type**: Not defined
-- **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-
-## image_scp_libpod
-
-> models::ScpReport image_scp_libpod(name, destination, quiet)
-Copy an image from one host to another
-
-Copy an image from one host to another
-
-### Parameters
-
-
-Name | Type | Description  | Required | Notes
-------------- | ------------- | ------------- | ------------- | -------------
-**name** | **String** | source connection/image | [required] |
-**destination** | Option<**String**> | dest connection/image |  |
-**quiet** | Option<**bool**> | quiet output |  |[default to false]
-
-### Return type
-
-[**models::ScpReport**](ScpReport.md)
 
 ### Authorization
 
@@ -641,8 +547,8 @@ Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
 **term** | Option<**String**> | term to search |  |
 **limit** | Option<**i32**> | maximum number of results |  |[default to 25]
-**filters** | Option<**String**> | A JSON encoded value of the filters (a `map[string][]string`) to process on the images list. Available filters: - `is-automated=(true|false)` - `is-official=(true|false)` - `stars=<number>` Matches images that have at least 'number' stars.  |  |
-**tls_verify** | Option<**bool**> | Require HTTPS and verify signatures when contacting registries. |  |[default to true]
+**filters** | Option<**String**> | A JSON encoded value of the filters (a `map[string][]string`) to process on the images list. Available filters: - `is-automated=(true|false)` - `is-official=(true|false)` - `stars=<number>` Matches images that has at least 'number' stars.  |  |
+**tls_verify** | Option<**bool**> | skip TLS verification for registries |  |[default to false]
 **list_tags** | Option<**bool**> | list the available tags in the repository |  |[default to false]
 
 ### Return type
@@ -695,7 +601,7 @@ No authorization required
 
 ## image_tree_libpod
 
-> models::ImageTreeReport image_tree_libpod(name, whatrequires)
+> models::ImageTreeLibpod200Response image_tree_libpod(name, whatrequires)
 Image tree
 
 Retrieve the image tree for the provided image name or ID
@@ -710,7 +616,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**models::ImageTreeReport**](ImageTreeReport.md)
+[**models::ImageTreeLibpod200Response**](ImageTreeLibpod_200_response.md)
 
 ### Authorization
 
@@ -743,109 +649,6 @@ Name | Type | Description  | Required | Notes
 ### Return type
 
  (empty response body)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
-- **Content-Type**: Not defined
-- **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-
-## local_build_libpod
-
-> models::ImageBuildLibpod200Response local_build_libpod(localcontextdir, x_registry_config, dockerfile, t, allplatforms, additionalbuildcontexts, extrahosts, nohosts, remote, q, compatvolumes, createdannotation, sourcedateepoch, rewritetimestamp, timestamp, inheritlabels, inheritannotations, nocache, cachefrom, pull, rm, forcerm, memory, memswap, cpushares, cpusetcpus, cpuperiod, cpuquota, buildargs, shmsize, squash, labels, layer_label, layers, networkmode, platform, target, outputs, httpproxy, unsetenv, unsetlabel, unsetannotation, volume, manifest)
-Create image from local build context
-
-Build an image from a local build context directory without requiring tar archive upload. The build context must already exist on the server filesystem.
-
-### Parameters
-
-
-Name | Type | Description  | Required | Notes
-------------- | ------------- | ------------- | ------------- | -------------
-**localcontextdir** | **String** | Absolute path to the build context directory on the server filesystem. This directory must contain all files needed for the build.  | [required] |
-**x_registry_config** | Option<**String**> |  |  |
-**dockerfile** | Option<**String**> | Absolute path within the build context to the `Dockerfile`. This is ignored if remote is specified and points to an external `Dockerfile`.  |  |[default to Dockerfile]
-**t** | Option<**String**> | A name and optional tag to apply to the image in the `name:tag` format.  If you omit the tag, the default latest value is assumed. You can provide several t parameters. |  |[default to latest]
-**allplatforms** | Option<**bool**> | Instead of building for a set of platforms specified using the platform option, inspect the build's base images, and build for all of the platforms that are available.  Stages that use *scratch* as a starting point can not be inspected, so at least one non-*scratch* stage must be present for detection to work usefully.  |  |[default to false]
-**additionalbuildcontexts** | Option<[**Vec<String>**](String.md)> | Additional build contexts for builds that require more than one context. Each additional context must be specified as a key-value pair in the format \"name=value\".  The value can be specified in three formats: - URL context: Use the prefix \"url:\" followed by a URL to a tar archive   Example: \"mycontext=url:https://example.com/context.tar\" - Image context: Use the prefix \"image:\" followed by an image reference   Example: \"mycontext=image:alpine:latest\" or \"mycontext=image:docker.io/library/ubuntu:22.04\" - Local path context: Use the prefix \"localpath:\" followed by an absolute path on the server filesystem   Example: \"mycontext=localpath:/path/to/context/dir\"  (As of version 5.6.0)  |  |[default to []]
-**extrahosts** | Option<**String**> | TBD Extra hosts to add to /etc/hosts (As of version 1.xx)  |  |
-**nohosts** | Option<**bool**> | Not to create /etc/hosts when building the image  |  |
-**remote** | Option<**String**> | A Git repository URI or HTTP/HTTPS context URI. If the URI points to a single text file, the file's contents are placed into a file called Dockerfile and the image is built from that file. If the URI points to a tarball, the file is downloaded by the daemon and the contents therein used as the context for the build. If the URI points to a tarball and the dockerfile parameter is also specified, there must be a file with the corresponding path inside the tarball. (As of version 1.xx)  |  |
-**q** | Option<**bool**> | Suppress verbose build output  |  |[default to false]
-**compatvolumes** | Option<**bool**> | Contents of volume locations to be modified on ADD or COPY only (As of Podman version v5.2)  |  |[default to false]
-**createdannotation** | Option<**bool**> | Add an \"org.opencontainers.image.created\" annotation to the image. (As of Podman version v5.6)  |  |[default to true]
-**sourcedateepoch** | Option<**f64**> | Timestamp to use for newly-added history entries and the image's creation date. (As of Podman version v5.6)  |  |
-**rewritetimestamp** | Option<**bool**> | If sourcedateepoch is set, force new content added in layers to have timestamps no later than the sourcedateepoch date. (As of Podman version v5.6)  |  |[default to false]
-**timestamp** | Option<**f64**> | Timestamp to use for newly-added history entries, the image's creation date, and for new content added in layers.  |  |
-**inheritlabels** | Option<**bool**> | Inherit the labels from the base image or base stages (As of Podman version v5.5)  |  |[default to true]
-**inheritannotations** | Option<**bool**> | Inherit the annotations from the base image or base stages (As of Podman version v5.6)  |  |[default to true]
-**nocache** | Option<**bool**> | Do not use the cache when building the image (As of version 1.xx)  |  |[default to false]
-**cachefrom** | Option<**String**> | JSON array of images used to build cache resolution (As of version 1.xx)  |  |
-**pull** | Option<**bool**> | Attempt to pull the image even if an older image exists locally (As of version 1.xx)  |  |[default to false]
-**rm** | Option<**bool**> | Remove intermediate containers after a successful build (As of version 1.xx)  |  |[default to true]
-**forcerm** | Option<**bool**> | Always remove intermediate containers, even upon failure (As of version 1.xx)  |  |[default to false]
-**memory** | Option<**i32**> | Memory is the upper limit (in bytes) on how much memory running containers can use (As of version 1.xx)  |  |
-**memswap** | Option<**i32**> | MemorySwap limits the amount of memory and swap together (As of version 1.xx)  |  |
-**cpushares** | Option<**i32**> | CPUShares (relative weight (As of version 1.xx)  |  |
-**cpusetcpus** | Option<**String**> | CPUSetCPUs in which to allow execution (0-3, 0,1) (As of version 1.xx)  |  |
-**cpuperiod** | Option<**i32**> | CPUPeriod limits the CPU CFS (Completely Fair Scheduler) period (As of version 1.xx)  |  |
-**cpuquota** | Option<**i32**> | CPUQuota limits the CPU CFS (Completely Fair Scheduler) quota (As of version 1.xx)  |  |
-**buildargs** | Option<**String**> | JSON map of string pairs denoting build-time variables. For example, the build argument `Foo` with the value of `bar` would be encoded in JSON as `[\"Foo\":\"bar\"]`.  For example, buildargs={\"Foo\":\"bar\"}.  Note(s): * This should not be used to pass secrets. * The value of buildargs should be URI component encoded before being passed to the API.  (As of version 1.xx)  |  |
-**shmsize** | Option<**i32**> | ShmSize is the \"size\" value to use when mounting an shmfs on the container's /dev/shm directory. Default is 64MB (As of version 1.xx)  |  |[default to 67108864]
-**squash** | Option<**bool**> | Silently ignored. Squash the resulting images layers into a single layer (As of version 1.xx)  |  |[default to false]
-**labels** | Option<**String**> | JSON map of key, value pairs to set as labels on the new image (As of version 1.xx)  |  |
-**layer_label** | Option<[**Vec<String>**](String.md)> | Add an intermediate image *label* (e.g. label=*value*) to the intermediate image metadata. |  |
-**layers** | Option<**bool**> | Cache intermediate layers during build. (As of version 1.xx)  |  |[default to true]
-**networkmode** | Option<**String**> | Sets the networking mode for the run commands during build. Supported standard values are:   * `bridge` limited to containers within a single host, port mapping required for external access   * `host` no isolation between host and containers on this network   * `none` disable all networking for this container   * container:<nameOrID> share networking with given container   ---All other values are assumed to be a custom network's name (As of version 1.xx)  |  |[default to bridge]
-**platform** | Option<**String**> | Platform format os[/arch[/variant]] (As of version 1.xx)  |  |
-**target** | Option<**String**> | Target build stage (As of version 1.xx)  |  |
-**outputs** | Option<**String**> | output configuration TBD (As of version 1.xx)  |  |
-**httpproxy** | Option<**bool**> | Inject http proxy environment variables into container (As of version 2.0.0)  |  |
-**unsetenv** | Option<[**Vec<String>**](String.md)> | Unset environment variables from the final image. |  |
-**unsetlabel** | Option<[**Vec<String>**](String.md)> | Unset the image label, causing the label not to be inherited from the base image. |  |
-**unsetannotation** | Option<[**Vec<String>**](String.md)> | Unset the image annotation, causing the annotation not to be inherited from the base image. (As of Podman version v5.6)  |  |
-**volume** | Option<[**Vec<String>**](String.md)> | Extra volumes that should be mounted in the build container. |  |
-**manifest** | Option<**String**> | Add the image to the specified manifest list. Creates a manifest list if it does not exist.  |  |
-
-### Return type
-
-[**models::ImageBuildLibpod200Response**](ImageBuildLibpod_200_response.md)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
-- **Content-Type**: Not defined
-- **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-
-## local_images_libpod
-
-> models::ImageLoadReport local_images_libpod(path)
-Load image from local path
-
-Load an image (oci-archive or docker-archive) from a file path accessible on the server.
-
-### Parameters
-
-
-Name | Type | Description  | Required | Notes
-------------- | ------------- | ------------- | ------------- | -------------
-**path** | **String** | Path to the image archive file on the server filesystem | [required] |
-
-### Return type
-
-[**models::ImageLoadReport**](ImageLoadReport.md)
 
 ### Authorization
 

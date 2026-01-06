@@ -4,10 +4,11 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**driver** | **String** | Name of the volume driver to use. | 
-**driver_opts** | **std::collections::HashMap<String, String>** | A mapping of driver options and values. These options are passed directly to the driver and are driver specific. | 
-**labels** | **std::collections::HashMap<String, String>** | User-defined key/value metadata. | 
-**name** | **String** | The new volume's name. If not specified, Docker generates a name. | 
+**driver** | Option<**String**> | Volume driver to use | [optional]
+**label** | Option<**std::collections::HashMap<String, String>**> | User-defined key/value metadata. Provided for compatibility | [optional]
+**labels** | Option<**std::collections::HashMap<String, String>**> | User-defined key/value metadata. Preferred field, will override Label | [optional]
+**name** | Option<**String**> | New volume's name. Can be left blank | [optional]
+**options** | Option<**std::collections::HashMap<String, String>**> | Mapping of driver options and values. | [optional]
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

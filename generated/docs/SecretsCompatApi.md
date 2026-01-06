@@ -13,7 +13,7 @@ Method | HTTP request | Description
 
 ## secret_create
 
-> models::ContainerUpdateLibpod201Response secret_create(create)
+> models::SecretCreateLibpod201Response secret_create(create)
 Create a secret
 
 ### Parameters
@@ -25,7 +25,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**models::ContainerUpdateLibpod201Response**](ContainerUpdateLibpod_201_response.md)
+[**models::SecretCreateLibpod201Response**](SecretCreateLibpod_201_response.md)
 
 ### Authorization
 
@@ -97,17 +97,14 @@ No authorization required
 
 ## secret_list
 
-> Vec<models::SecretInfoReportCompat> secret_list(filters)
+> Vec<models::SecretInfoReportCompat> secret_list()
 List secrets
 
 Returns a list of secrets
 
 ### Parameters
 
-
-Name | Type | Description  | Required | Notes
-------------- | ------------- | ------------- | ------------- | -------------
-**filters** | Option<**String**> | JSON encoded value of the filters (a `map[string][]string`) to process on the secrets list. Currently available filters:   - `name=[name]` Matches secrets name (accepts regex).   - `id=[id]` Matches for full or partial ID.  |  |
+This endpoint does not need any parameter.
 
 ### Return type
 

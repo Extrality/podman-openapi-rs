@@ -7,8 +7,6 @@ Method | HTTP request | Description
 [**volume_create_libpod**](VolumesApi.md#volume_create_libpod) | **POST** /libpod/volumes/create | Create a volume
 [**volume_delete_libpod**](VolumesApi.md#volume_delete_libpod) | **DELETE** /libpod/volumes/{name} | Remove volume
 [**volume_exists_libpod**](VolumesApi.md#volume_exists_libpod) | **GET** /libpod/volumes/{name}/exists | Volume exists
-[**volume_export_libpod**](VolumesApi.md#volume_export_libpod) | **GET** /libpod/volumes/{name}/export | Export a volume
-[**volume_import_libpod**](VolumesApi.md#volume_import_libpod) | **POST** /libpod/volumes/{name}/import | Populate a volume by importing provided tar
 [**volume_inspect_libpod**](VolumesApi.md#volume_inspect_libpod) | **GET** /libpod/volumes/{name}/json | Inspect volume
 [**volume_list_libpod**](VolumesApi.md#volume_list_libpod) | **GET** /libpod/volumes/json | List volumes
 [**volume_prune_libpod**](VolumesApi.md#volume_prune_libpod) | **POST** /libpod/volumes/prune | Prune volumes
@@ -17,7 +15,7 @@ Method | HTTP request | Description
 
 ## volume_create_libpod
 
-> models::VolumeConfigResponse volume_create_libpod(create)
+> models::VolumeInspectLibpod200Response volume_create_libpod(create)
 Create a volume
 
 ### Parameters
@@ -25,11 +23,11 @@ Create a volume
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**create** | Option<[**VolumeCreateOptions**](VolumeCreateOptions.md)> | attributes for creating a volume |  |
+**create** | Option<[**VolumeCreate**](VolumeCreate.md)> | attributes for creating a volume |  |
 
 ### Return type
 
-[**models::VolumeConfigResponse**](VolumeConfigResponse.md)
+[**models::VolumeInspectLibpod200Response**](VolumeInspectLibpod_200_response.md)
 
 ### Authorization
 
@@ -102,66 +100,9 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 
-## volume_export_libpod
-
-> std::path::PathBuf volume_export_libpod(name)
-Export a volume
-
-### Parameters
-
-
-Name | Type | Description  | Required | Notes
-------------- | ------------- | ------------- | ------------- | -------------
-**name** | **String** | the name or ID of the volume | [required] |
-
-### Return type
-
-[**std::path::PathBuf**](std::path::PathBuf.md)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
-- **Content-Type**: Not defined
-- **Accept**: application/x-tar
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-
-## volume_import_libpod
-
-> volume_import_libpod(name, input_stream)
-Populate a volume by importing provided tar
-
-### Parameters
-
-
-Name | Type | Description  | Required | Notes
-------------- | ------------- | ------------- | ------------- | -------------
-**name** | **String** | the name or ID of the volume | [required] |
-**input_stream** | Option<**std::path::PathBuf**> | An uncompressed tar archive  |  |
-
-### Return type
-
- (empty response body)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
-- **Content-Type**: application/json, application/x-tar
-- **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-
 ## volume_inspect_libpod
 
-> models::VolumeConfigResponse volume_inspect_libpod(name)
+> models::VolumeInspectLibpod200Response volume_inspect_libpod(name)
 Inspect volume
 
 ### Parameters
@@ -173,7 +114,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**models::VolumeConfigResponse**](VolumeConfigResponse.md)
+[**models::VolumeInspectLibpod200Response**](VolumeInspectLibpod_200_response.md)
 
 ### Authorization
 

@@ -4,7 +4,6 @@ All URIs are relative to *http://podman.io*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**system_check_libpod**](SystemApi.md#system_check_libpod) | **POST** /libpod/system/check | Performs consistency checks on storage, optionally removing items which fail checks
 [**system_data_usage_libpod**](SystemApi.md#system_data_usage_libpod) | **GET** /libpod/system/df | Show disk usage
 [**system_events_libpod**](SystemApi.md#system_events_libpod) | **GET** /libpod/events | Get events
 [**system_info_libpod**](SystemApi.md#system_info_libpod) | **GET** /libpod/info | Get info
@@ -14,40 +13,9 @@ Method | HTTP request | Description
 
 
 
-## system_check_libpod
-
-> models::SystemCheckReport system_check_libpod(quick, repair, repair_lossy, unreferenced_layer_max_age)
-Performs consistency checks on storage, optionally removing items which fail checks
-
-### Parameters
-
-
-Name | Type | Description  | Required | Notes
-------------- | ------------- | ------------- | ------------- | -------------
-**quick** | Option<**bool**> | Skip time-consuming checks |  |
-**repair** | Option<**bool**> | Remove inconsistent images |  |
-**repair_lossy** | Option<**bool**> | Remove inconsistent containers and images |  |
-**unreferenced_layer_max_age** | Option<**String**> | Maximum allowed age of unreferenced layers |  |[default to 24h0m0s]
-
-### Return type
-
-[**models::SystemCheckReport**](SystemCheckReport.md)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
-- **Content-Type**: Not defined
-- **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-
 ## system_data_usage_libpod
 
-> models::SystemDfReport system_data_usage_libpod()
+> models::SystemDataUsageLibpod200Response system_data_usage_libpod()
 Show disk usage
 
 Return information about disk usage for containers, images, and volumes
@@ -58,7 +26,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**models::SystemDfReport**](SystemDfReport.md)
+[**models::SystemDataUsageLibpod200Response**](SystemDataUsageLibpod_200_response.md)
 
 ### Authorization
 
@@ -107,7 +75,7 @@ No authorization required
 
 ## system_info_libpod
 
-> models::LibpodInfo system_info_libpod()
+> models::Info system_info_libpod()
 Get info
 
 Returns information on the system and libpod configuration
@@ -118,7 +86,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**models::LibpodInfo**](LibpodInfo.md)
+[**models::Info**](Info.md)
 
 ### Authorization
 
@@ -161,7 +129,7 @@ No authorization required
 
 ## system_prune_libpod
 
-> models::SystemPruneReport system_prune_libpod()
+> models::SystemPruneLibpod200Response system_prune_libpod()
 Prune unused data
 
 ### Parameters
@@ -170,7 +138,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**models::SystemPruneReport**](SystemPruneReport.md)
+[**models::SystemPruneLibpod200Response**](SystemPruneLibpod_200_response.md)
 
 ### Authorization
 
@@ -186,7 +154,7 @@ No authorization required
 
 ## system_version_libpod
 
-> models::SystemComponentVersion system_version_libpod()
+> models::SystemVersionLibpod200Response system_version_libpod()
 Component Version information
 
 ### Parameters
@@ -195,7 +163,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**models::SystemComponentVersion**](SystemComponentVersion.md)
+[**models::SystemVersionLibpod200Response**](SystemVersionLibpod_200_response.md)
 
 ### Authorization
 

@@ -15,7 +15,7 @@ Method | HTTP request | Description
 
 ## system_auth
 
-> models::AuthReport system_auth(auth_config)
+> models::SystemAuth200Response system_auth(auth_config)
 Check auth configuration
 
 ### Parameters
@@ -27,7 +27,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**models::AuthReport**](AuthReport.md)
+[**models::SystemAuth200Response**](SystemAuth_200_response.md)
 
 ### Authorization
 
@@ -43,7 +43,7 @@ No authorization required
 
 ## system_data_usage
 
-> models::SystemDfReport system_data_usage()
+> models::SystemDataUsageLibpod200Response system_data_usage()
 Show disk usage
 
 Return information about disk usage for containers, images, and volumes
@@ -54,7 +54,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**models::SystemDfReport**](SystemDfReport.md)
+[**models::SystemDataUsageLibpod200Response**](SystemDataUsageLibpod_200_response.md)
 
 ### Authorization
 
@@ -156,7 +156,7 @@ No authorization required
 
 ## system_version
 
-> models::SystemComponentVersion system_version()
+> models::SystemVersionLibpod200Response system_version()
 Component Version information
 
 ### Parameters
@@ -165,7 +165,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**models::SystemComponentVersion**](SystemComponentVersion.md)
+[**models::SystemVersionLibpod200Response**](SystemVersionLibpod_200_response.md)
 
 ### Authorization
 

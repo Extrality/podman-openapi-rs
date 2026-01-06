@@ -6,7 +6,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **args** | [**models::PluginConfigArgs**](PluginConfigArgs.md) |  | 
 **description** | **String** | description | 
-**docker_version** | Option<**String**> | Docker Version used to create the plugin.  Depending on how the plugin was created, this field may be empty or omitted.  Deprecated: this field is no longer set, and will be removed in the next API version. | [optional]
+**docker_version** | Option<**String**> | Docker Version used to create the plugin | [optional]
 **documentation** | **String** | documentation | 
 **entrypoint** | **Vec<String>** | entrypoint | 
 **env** | [**Vec<models::PluginEnv>**](PluginEnv.md) | env | 

@@ -25,7 +25,6 @@ Method | HTTP request | Description
 [**container_stop**](ContainersCompatApi.md#container_stop) | **POST** /containers/{name}/stop | Stop a container
 [**container_top**](ContainersCompatApi.md#container_top) | **GET** /containers/{name}/top | List processes running inside a container
 [**container_unpause**](ContainersCompatApi.md#container_unpause) | **POST** /containers/{name}/unpause | Unpause container
-[**container_update**](ContainersCompatApi.md#container_update) | **POST** /containers/{name}/update | Update configuration of an existing container
 [**container_wait**](ContainersCompatApi.md#container_wait) | **POST** /containers/{name}/wait | Wait on a container
 [**image_commit**](ContainersCompatApi.md#image_commit) | **POST** /commit | New Image
 [**put_container_archive**](ContainersCompatApi.md#put_container_archive) | **PUT** /containers/{name}/archive | Put files into a container
@@ -100,7 +99,7 @@ No authorization required
 > container_attach(name, detach_keys, logs, stream, stdout, stderr, stdin)
 Attach to a container
 
-Attach to a container to read its output or send it input. You can attach to the same container multiple times and you can reattach to containers that have been detached.  It uses the same stream format as docker, see the libpod attach endpoint for a description of the format. 
+Hijacks the connection to forward the container's standard streams to the client.
 
 ### Parameters
 
@@ -165,7 +164,7 @@ No authorization required
 
 ## container_create
 
-> models::ContainerCreateResponse container_create(body, name)
+> models::ContainerCreate201Response container_create(body, name)
 Create a container
 
 ### Parameters
@@ -178,7 +177,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**models::ContainerCreateResponse**](ContainerCreateResponse.md)
+[**models::ContainerCreate201Response**](ContainerCreate_201_response.md)
 
 ### Authorization
 
@@ -255,7 +254,7 @@ No authorization required
 
 ## container_inspect
 
-> models::InspectResponse container_inspect(name, size)
+> models::ContainerInspect200Response container_inspect(name, size)
 Inspect container
 
 Return low-level information about a container.
@@ -270,7 +269,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**models::InspectResponse**](InspectResponse.md)
+[**models::ContainerInspect200Response**](ContainerInspect_200_response.md)
 
 ### Authorization
 
@@ -318,7 +317,7 @@ No authorization required
 
 ## container_list
 
-> Vec<models::Container> container_list(all, external, limit, size, filters)
+> serde_json::Value container_list(all, external, limit, size, filters)
 List containers
 
 Returns a list of containers
@@ -332,11 +331,11 @@ Name | Type | Description  | Required | Notes
 **external** | Option<**bool**> | Return containers in storage not controlled by Podman |  |[default to false]
 **limit** | Option<**i32**> | Return this number of most recently created containers, including non-running ones. |  |
 **size** | Option<**bool**> | Return the size of container as fields SizeRw and SizeRootFs. |  |[default to false]
-**filters** | Option<**String**> | A JSON encoded value of the filters (a `map[string][]string`) to process on the containers list. Available filters: - `ancestor`=(`<image-name>[:<tag>]`, `<image id>`, or `<image@digest>`) - `before`=(`<container id>` or `<container name>`) - `expose`=(`<port>[/<proto>]` or `<startport-endport>/[<proto>]`) - `exited=<int>` containers with exit code of `<int>` - `health`=(`starting`, `healthy`, `unhealthy` or `none`) - `id=<ID>` a container's ID - `is-task`=(`true` or `false`) - `label`=(`key` or `\"key=value\"`) of a container label - `name=<name>` a container's name - `network`=(`<network id>` or `<network name>`) - `publish`=(`<port>[/<proto>]` or `<startport-endport>/[<proto>]`) - `since`=(`<container id>` or `<container name>`) - `status`=(`created`, `restarting`, `running`, `removing`, `paused`, `exited` or `dead`) - `volume`=(`<volume name>` or `<mount point destination>`)  |  |
+**filters** | Option<**String**> | Returns a list of containers.  - ancestor=(<image-name>[:<tag>], <image id>, or <image@digest>)  - before=(<container id> or <container name>)  - expose=(<port>[/<proto>]|<startport-endport>/[<proto>])  - exited=<int> containers with exit code of <int>  - health=(starting|healthy|unhealthy|none)  - id=<ID> a container's ID  - is-task=(true|false)  - label=key or label=\"key=value\" of a container label  - name=<name> a container's name  - network=(<network id> or <network name>)  - publish=(<port>[/<proto>]|<startport-endport>/[<proto>])  - since=(<container id> or <container name>)  - status=(created|restarting|running|removing|paused|exited|dead)  - volume=(<volume name> or <mount point destination>)  |  |
 
 ### Return type
 
-[**Vec<models::Container>**](Container.md)
+[**serde_json::Value**](serde_json::Value.md)
 
 ### Authorization
 
@@ -571,7 +570,7 @@ No authorization required
 
 ## container_stats
 
-> serde_json::Value container_stats(name, stream, one_shot)
+> container_stats(name, stream, one_shot)
 Get stats for a container
 
 This returns a live stream of a container’s resource usage statistics.
@@ -587,7 +586,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**serde_json::Value**](serde_json::Value.md)
+ (empty response body)
 
 ### Authorization
 
@@ -634,7 +633,7 @@ No authorization required
 
 ## container_top
 
-> models::ContainerTopOkBody container_top(name, ps_args)
+> models::ContainerTop200Response container_top(name, ps_args)
 List processes running inside a container
 
 ### Parameters
@@ -643,11 +642,11 @@ List processes running inside a container
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
 **name** | **String** | the name or ID of the container | [required] |
-**ps_args** | Option<**String**> | arguments to pass to ps such as aux. |  |[default to -ef]
+**ps_args** | Option<**String**> | arguments to pass to ps such as aux. Requires ps(1) to be installed in the container if no ps(1) compatible AIX descriptors are used. |  |[default to -ef]
 
 ### Return type
 
-[**models::ContainerTopOkBody**](ContainerTopOKBody.md)
+[**models::ContainerTop200Response**](ContainerTop_200_response.md)
 
 ### Authorization
 
@@ -691,37 +690,6 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 
-## container_update
-
-> container_update(name, resources)
-Update configuration of an existing container
-
-Change configuration settings for an existing container without requiring recreation.
-
-### Parameters
-
-
-Name | Type | Description  | Required | Notes
-------------- | ------------- | ------------- | ------------- | -------------
-**name** | **String** | Full or partial ID or full name of the container to rename | [required] |
-**resources** | Option<[**ContainerUpdateRequest**](ContainerUpdateRequest.md)> | attributes for updating the container |  |
-
-### Return type
-
- (empty response body)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
-- **Content-Type**: application/json, application/x-tar
-- **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-
 ## container_wait
 
 > models::ContainerWait200Response container_wait(name, condition, interval)
@@ -756,7 +724,7 @@ No authorization required
 
 ## image_commit
 
-> image_commit(container, repo, tag, comment, author, pause, changes, squash)
+> image_commit(container, repo, tag, comment, author, pause, changes)
 New Image
 
 Create a new image from a container
@@ -773,7 +741,6 @@ Name | Type | Description  | Required | Notes
 **author** | Option<**String**> | author of the image |  |
 **pause** | Option<**bool**> | pause the container before committing it |  |
 **changes** | Option<**String**> | instructions to apply while committing in Dockerfile format |  |
-**squash** | Option<**bool**> | squash newly built layers into a single new layer |  |
 
 ### Return type
 

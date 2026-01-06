@@ -4,7 +4,7 @@ All URIs are relative to *http://podman.io*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**image_build**](ImagesCompatApi.md#image_build) | **POST** /build | Build image
+[**image_build**](ImagesCompatApi.md#image_build) | **POST** /build | Create image
 [**image_create**](ImagesCompatApi.md#image_create) | **POST** /images/create | Create an image
 [**image_delete**](ImagesCompatApi.md#image_delete) | **DELETE** /images/{name} | Remove Image
 [**image_get**](ImagesCompatApi.md#image_get) | **GET** /images/{name}/get | Export an image
@@ -22,8 +22,8 @@ Method | HTTP request | Description
 
 ## image_build
 
-> models::ImageBuild200Response image_build(content_type, x_registry_config, dockerfile, t, extrahosts, nohosts, remote, retry, retry_delay, q, nocache, cachefrom, pull, rm, forcerm, memory, memswap, cpushares, cpusetcpus, cpuperiod, cpuquota, buildargs, shmsize, squash, labels, networkmode, platform, target, outputs, input_stream)
-Build image
+> models::ImageBuild200Response image_build(content_type, x_registry_config, dockerfile, t, extrahosts, remote, q, nocache, cachefrom, pull, rm, forcerm, memory, memswap, cpushares, cpusetcpus, cpuperiod, cpuquota, buildargs, shmsize, squash, labels, networkmode, platform, target, outputs, input_stream)
+Create image
 
 Build an image from the given Dockerfile(s)
 
@@ -35,12 +35,9 @@ Name | Type | Description  | Required | Notes
 **content_type** | Option<**String**> |  |  |[default to application/x-tar]
 **x_registry_config** | Option<**String**> |  |  |
 **dockerfile** | Option<**String**> | Path within the build context to the `Dockerfile`. This is ignored if remote is specified and points to an external `Dockerfile`.  |  |[default to Dockerfile]
-**t** | Option<**String**> | A name and optional tag to apply to the image in the `name:tag` format. If you omit the tag, the default latest value is assumed. You can provide several t parameters. |  |[default to latest]
+**t** | Option<**String**> | A name and optional tag to apply to the image in the `name:tag` format. If you omit the tag the default latest value is assumed. You can provide several t parameters. |  |[default to latest]
 **extrahosts** | Option<**String**> | TBD Extra hosts to add to /etc/hosts (As of version 1.xx)  |  |
-**nohosts** | Option<**bool**> | Not to create /etc/hosts when building the image  |  |
 **remote** | Option<**String**> | A Git repository URI or HTTP/HTTPS context URI. If the URI points to a single text file, the file’s contents are placed into a file called Dockerfile and the image is built from that file. If the URI points to a tarball, the file is downloaded by the daemon and the contents therein used as the context for the build. If the URI points to a tarball and the dockerfile parameter is also specified, there must be a file with the corresponding path inside the tarball. (As of version 1.xx)  |  |
-**retry** | Option<**i32**> | Number of times to retry in case of failure when performing push/pull.  |  |[default to 3]
-**retry_delay** | Option<**String**> | Delay between retries in case of push/pull failures.  |  |[default to 2s]
 **q** | Option<**bool**> | Suppress verbose build output  |  |[default to false]
 **nocache** | Option<**bool**> | Do not use the cache when building the image (As of version 1.xx)  |  |[default to false]
 **cachefrom** | Option<**String**> | JSON array of images used to build cache resolution (As of version 1.xx)  |  |
@@ -58,7 +55,7 @@ Name | Type | Description  | Required | Notes
 **squash** | Option<**bool**> | Silently ignored. Squash the resulting images layers into a single layer (As of version 1.xx)  |  |[default to false]
 **labels** | Option<**String**> | JSON map of key, value pairs to set as labels on the new image (As of version 1.xx)  |  |
 **networkmode** | Option<**String**> | Sets the networking mode for the run commands during build. Supported standard values are:   * `bridge` limited to containers within a single host, port mapping required for external access   * `host` no isolation between host and containers on this network   * `none` disable all networking for this container   * container:<nameOrID> share networking with given container   ---All other values are assumed to be a custom network's name (As of version 1.xx)  |  |[default to bridge]
-**platform** | Option<**String**> | Platform format os[/arch[/variant]] Can be comma separated list for multi arch builds. (As of version 1.xx)  |  |
+**platform** | Option<**String**> | Platform format os[/arch[/variant]] (As of version 1.xx)  |  |
 **target** | Option<**String**> | Target build stage (As of version 1.xx)  |  |
 **outputs** | Option<**String**> | output configuration TBD (As of version 1.xx)  |  |
 **input_stream** | Option<**std::path::PathBuf**> | A tar archive compressed with one of the following algorithms: identity (no compression), gzip, bzip2, xz.  |  |
@@ -129,8 +126,8 @@ Delete an image from local storage
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
 **name** | **String** | name or ID of image to delete | [required] |
-**force** | Option<**bool**> | Remove the image even if it is being used by stopped containers or has other tags |  |
-**noprune** | Option<**bool**> | do not remove dangling parent images |  |
+**force** | Option<**bool**> | remove the image even if used by containers or has other tags |  |
+**noprune** | Option<**bool**> | not supported. will be logged as an invalid parameter if enabled |  |
 
 ### Return type
 
@@ -210,7 +207,7 @@ No authorization required
 
 ## image_history
 
-> models::HistoryResponse image_history(name)
+> models::ImageHistory200Response image_history(name)
 History of an image
 
 Return parent layers of an image.
@@ -224,7 +221,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**models::HistoryResponse**](HistoryResponse.md)
+[**models::ImageHistory200Response**](ImageHistory_200_response.md)
 
 ### Authorization
 
@@ -240,7 +237,7 @@ No authorization required
 
 ## image_inspect
 
-> models::ImageInspect image_inspect(name)
+> models::ImageInspect200Response image_inspect(name)
 Inspect an image
 
 Return low-level information about an image.
@@ -254,7 +251,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**models::ImageInspect**](ImageInspect.md)
+[**models::ImageInspect200Response**](ImageInspect_200_response.md)
 
 ### Authorization
 
@@ -270,7 +267,7 @@ No authorization required
 
 ## image_list
 
-> Vec<models::Summary> image_list(all, filters, digests)
+> Vec<models::ImageSummary> image_list(all, filters, digests)
 List Images
 
 Returns a list of images on the server. Note that it uses a different, smaller representation of an image than inspecting a single image.
@@ -286,7 +283,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**Vec<models::Summary>**](Summary.md)
+[**Vec<models::ImageSummary>**](ImageSummary.md)
 
 ### Authorization
 
@@ -363,7 +360,7 @@ No authorization required
 
 ## image_push
 
-> std::path::PathBuf image_push(name, tag, all, compress, destination, format, tls_verify, x_registry_auth)
+> std::path::PathBuf image_push(name, tag, all, compress, destination, x_registry_auth)
 Push Image
 
 Push an image to a container registry
@@ -376,10 +373,8 @@ Name | Type | Description  | Required | Notes
 **name** | **String** | Name of image to push. | [required] |
 **tag** | Option<**String**> | The tag to associate with the image on the registry. |  |
 **all** | Option<**bool**> | All indicates whether to push all images related to the image list |  |
-**compress** | Option<**bool**> | Use compression on image. |  |
-**destination** | Option<**String**> | Allows for pushing the image to a different destination than the image refers to. |  |
-**format** | Option<**String**> | Manifest type (oci, v2s1, or v2s2) to use when pushing an image. Default is manifest type of source, with fallbacks. |  |
-**tls_verify** | Option<**bool**> | Require TLS verification. |  |[default to true]
+**compress** | Option<**bool**> | use compression on image |  |
+**destination** | Option<**String**> | destination name for the image being pushed |  |
 **x_registry_auth** | Option<**String**> | A base64-encoded auth configuration. |  |
 
 ### Return type
@@ -412,8 +407,8 @@ Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
 **term** | Option<**String**> | term to search |  |
 **limit** | Option<**i32**> | maximum number of results |  |[default to 25]
-**filters** | Option<**String**> | A JSON encoded value of the filters (a `map[string][]string`) to process on the images list. Available filters: - `is-automated=(true|false)` - `is-official=(true|false)` - `stars=<number>` Matches images that have at least 'number' stars.  |  |
-**tls_verify** | Option<**bool**> | Require HTTPS and verify signatures when contacting registries. |  |[default to true]
+**filters** | Option<**String**> | A JSON encoded value of the filters (a `map[string][]string`) to process on the images list. Available filters: - `is-automated=(true|false)` - `is-official=(true|false)` - `stars=<number>` Matches images that has at least 'number' stars.  |  |
+**tls_verify** | Option<**bool**> | skip TLS verification for registries |  |[default to false]
 **list_tags** | Option<**bool**> | list the available tags in the repository |  |
 
 ### Return type

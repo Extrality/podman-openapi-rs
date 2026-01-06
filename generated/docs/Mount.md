@@ -5,9 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **bind_options** | Option<[**models::BindOptions**](BindOptions.md)> |  | [optional]
-**cluster_options** | Option<[**serde_json::Value**](.md)> |  | [optional]
 **consistency** | Option<**String**> |  | [optional]
-**image_options** | Option<[**models::ImageOptions**](ImageOptions.md)> |  | [optional]
 **read_only** | Option<**bool**> |  | [optional]
 **source** | Option<**String**> | Source specifies the name of the mount. Depending on mount type, this may be a volume name or a host path, or even ignored. Source is not supported for tmpfs (must be an empty value) | [optional]
 **target** | Option<**String**> |  | [optional]

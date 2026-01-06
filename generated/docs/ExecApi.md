@@ -109,7 +109,7 @@ No authorization required
 > exec_start_libpod(id, control)
 Start an exec instance
 
-Starts a previously set up exec instance. If detach is true, this endpoint returns immediately after starting the command. Otherwise, it sets up an interactive session with the command. The stream format is the same as the attach endpoint. 
+Starts a previously set up exec instance. If detach is true, this endpoint returns immediately after starting the command. Otherwise, it sets up an interactive session with the command.
 
 ### Parameters
 

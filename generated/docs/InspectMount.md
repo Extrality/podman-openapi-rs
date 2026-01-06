@@ -12,7 +12,6 @@ Name | Type | Description | Notes
 **propagation** | Option<**String**> | Mount propagation for the mount. Can be empty if not specified, but is always printed - no omitempty. | [optional]
 **rw** | Option<**bool**> | Whether the volume is read-write | [optional]
 **source** | Option<**String**> | The source directory for the volume. | [optional]
-**sub_path** | Option<**String**> | SubPath object from the volume. Specified as a path within the source volume to be mounted at the Destination. | [optional]
 **r#type** | Option<**String**> | Whether the mount is a volume or bind mount. Allowed values are \"volume\" and \"bind\". | [optional]
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

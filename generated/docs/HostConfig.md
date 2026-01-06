@@ -4,7 +4,6 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**annotations** | Option<**std::collections::HashMap<String, String>**> |  | [optional]
 **auto_remove** | Option<**bool**> |  | [optional]
 **binds** | Option<**Vec<String>**> | Applicable to all platforms | [optional]
 **blkio_device_read_bps** | Option<[**Vec<models::ThrottleDevice>**](ThrottleDevice.md)> |  | [optional]
@@ -18,7 +17,7 @@ Name | Type | Description | Notes
 **cgroup** | Option<**String**> |  | [optional]
 **cgroup_parent** | Option<**String**> | Applicable to UNIX platforms | [optional]
 **cgroupns_mode** | Option<**String**> | CgroupnsMode represents the cgroup namespace mode of the container | [optional]
-**console_size** | Option<**Vec<i32>**> |  | [optional]
+**console_size** | Option<**Vec<i32>**> | Applicable to Windows | [optional]
 **container_id_file** | Option<**String**> |  | [optional]
 **cpu_count** | Option<**i64**> | Applicable to Windows | [optional]
 **cpu_percent** | Option<**i64**> |  | [optional]
@@ -42,8 +41,8 @@ Name | Type | Description | Notes
 **init** | Option<**bool**> | Run a custom init inside the container, if null, use the daemon's configured settings | [optional]
 **ipc_mode** | Option<**String**> |  | [optional]
 **isolation** | Option<**String**> | Isolation represents the isolation technology of a container. The supported values are platform specific | [optional]
-**kernel_memory** | Option<**i64**> | KernelMemory specifies the kernel memory limit (in bytes) for the container. Deprecated: kernel 5.4 deprecated kmem.limit_in_bytes. | [optional]
-**kernel_memory_tcp** | Option<**i64**> | Hard limit for kernel TCP buffer memory (in bytes).  Deprecated: This field is deprecated and will be removed in the next release. Starting with 6.12, the kernel has deprecated kernel memory tcp accounting for cgroups v1. | [optional]
+**kernel_memory** | Option<**i64**> |  | [optional]
+**kernel_memory_tcp** | Option<**i64**> |  | [optional]
 **links** | Option<**Vec<String>**> |  | [optional]
 **log_config** | Option<[**models::LogConfig**](LogConfig.md)> |  | [optional]
 **masked_paths** | Option<**Vec<String>**> | MaskedPaths is the list of paths to be masked inside the container (this overrides the default set of paths) | [optional]

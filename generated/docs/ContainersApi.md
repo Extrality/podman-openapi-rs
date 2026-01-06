@@ -31,14 +31,12 @@ Method | HTTP request | Description
 [**container_top_libpod**](ContainersApi.md#container_top_libpod) | **GET** /libpod/containers/{name}/top | List processes
 [**container_unmount_libpod**](ContainersApi.md#container_unmount_libpod) | **POST** /libpod/containers/{name}/unmount | Unmount a container
 [**container_unpause_libpod**](ContainersApi.md#container_unpause_libpod) | **POST** /libpod/containers/{name}/unpause | Unpause Container
-[**container_update_libpod**](ContainersApi.md#container_update_libpod) | **POST** /libpod/containers/{name}/update | Updates the configuration of an existing container, allowing changes to resource limits and healthchecks
 [**container_wait_libpod**](ContainersApi.md#container_wait_libpod) | **POST** /libpod/containers/{name}/wait | Wait on a container
 [**containers_stats_all_libpod**](ContainersApi.md#containers_stats_all_libpod) | **GET** /libpod/containers/stats | Get stats for one or more containers
 [**generate_kube_libpod**](ContainersApi.md#generate_kube_libpod) | **GET** /libpod/generate/kube | Generate a Kubernetes YAML file.
 [**generate_systemd_libpod**](ContainersApi.md#generate_systemd_libpod) | **GET** /libpod/generate/{name}/systemd | Generate Systemd Units
 [**image_commit_libpod**](ContainersApi.md#image_commit_libpod) | **POST** /libpod/commit | Commit
-[**kube_apply_libpod**](ContainersApi.md#kube_apply_libpod) | **POST** /libpod/kube/apply | Apply a podman workload or Kubernetes YAML file.
-[**play_kube_down_libpod**](ContainersApi.md#play_kube_down_libpod) | **DELETE** /libpod/play/kube | Remove resources created from kube play
+[**play_kube_down_libpod**](ContainersApi.md#play_kube_down_libpod) | **DELETE** /libpod/play/kube | Remove pods from play kube
 [**play_kube_libpod**](ContainersApi.md#play_kube_libpod) | **POST** /libpod/play/kube | Play a Kubernetes YAML file.
 [**put_container_archive_libpod**](ContainersApi.md#put_container_archive_libpod) | **PUT** /libpod/containers/{name}/archive | Copy files into a container
 
@@ -49,7 +47,7 @@ Method | HTTP request | Description
 > container_attach_libpod(name, detach_keys, logs, stream, stdout, stderr, stdin)
 Attach to a container
 
-Attach to a container to read its output or send it input. You can attach to the same container multiple times and you can reattach to containers that have been detached.  ### Hijacking  This endpoint hijacks the HTTP connection to transport `stdin`, `stdout`, and `stderr` on the same socket.  This is the response from the service for an attach request:  ``` HTTP/1.1 200 OK Content-Type: application/vnd.docker.raw-stream  [STREAM] ```  After the headers and two new lines, the TCP connection can now be used for raw, bidirectional communication between the client and server.  To inform potential proxies about connection hijacking, the client can also optionally send connection upgrade headers.  For example, the client sends this request to upgrade the connection:  ``` POST /v4.6.0/libpod/containers/16253994b7c4/attach?stream=1&stdout=1 HTTP/1.1 Upgrade: tcp Connection: Upgrade ```  The service will respond with a `101 UPGRADED` response, and will similarly follow with the raw stream:  ``` HTTP/1.1 101 UPGRADED Content-Type: application/vnd.docker.raw-stream Connection: Upgrade Upgrade: tcp  [STREAM] ```  ### Stream format  When the TTY setting is disabled for the container, the HTTP Content-Type header is set to application/vnd.docker.multiplexed-stream (starting with v4.7.0, previously application/vnd.docker.raw-stream was always used) and the stream over the hijacked connected is multiplexed to separate out `stdout` and `stderr`. The stream consists of a series of frames, each containing a header and a payload.  The header contains the information about the output stream type and the size of the payload. It is encoded on the first eight bytes like this:  ```go header := [8]byte{STREAM_TYPE, 0, 0, 0, SIZE1, SIZE2, SIZE3, SIZE4} ```  `STREAM_TYPE` can be:  - 0: `stdin` (is written on `stdout`) - 1: `stdout` - 2: `stderr`  `SIZE1, SIZE2, SIZE3, SIZE4` are the four bytes of the `uint32` size encoded as big endian.  Following the header is the payload, which contains the specified number of bytes as written in the size.  The simplest way to implement this protocol is the following:  1. Read 8 bytes. 2. Choose `stdout` or `stderr` depending on the first byte. 3. Extract the frame size from the last four bytes. 4. Read the extracted size and output it on the correct output. 5. Goto 1.  ### Stream format when using a TTY  When the TTY setting is enabled for the container, the stream is not multiplexed. The data exchanged over the hijacked connection is simply the raw data from the process PTY and client's `stdin`. 
+Hijacks the connection to forward the container's standard streams to the client.
 
 ### Parameters
 
@@ -114,7 +112,7 @@ No authorization required
 
 ## container_checkpoint_libpod
 
-> container_checkpoint_libpod(name, keep, leave_running, tcp_established, export, ignore_root_fs, ignore_volumes, pre_checkpoint, with_previous, file_locks, print_stats)
+> container_checkpoint_libpod(name, keep, leave_running, tcp_established, export, ignore_root_fs, print_stats)
 Checkpoint a container
 
 ### Parameters
@@ -127,11 +125,7 @@ Name | Type | Description  | Required | Notes
 **leave_running** | Option<**bool**> | leave the container running after writing checkpoint to disk |  |
 **tcp_established** | Option<**bool**> | checkpoint a container with established TCP connections |  |
 **export** | Option<**bool**> | export the checkpoint image to a tar.gz |  |
-**ignore_root_fs** | Option<**bool**> | do not include root file-system changes when exporting. can only be used with export |  |
-**ignore_volumes** | Option<**bool**> | do not include associated volumes. can only be used with export |  |
-**pre_checkpoint** | Option<**bool**> | dump the container's memory information only, leaving the container running. only works on runc 1.0-rc or higher |  |
-**with_previous** | Option<**bool**> | check out the container with previous criu image files in pre-dump. only works on runc 1.0-rc or higher |  |
-**file_locks** | Option<**bool**> | checkpoint a container with filelocks |  |
+**ignore_root_fs** | Option<**bool**> | do not include root file-system changes when exporting |  |
 **print_stats** | Option<**bool**> | add checkpoint statistics to the returned CheckpointReport |  |
 
 ### Return type
@@ -152,7 +146,7 @@ No authorization required
 
 ## container_create_libpod
 
-> models::ContainerCreateResponse container_create_libpod(create)
+> models::ContainerCreate201Response container_create_libpod(create)
 Create a container
 
 ### Parameters
@@ -160,11 +154,11 @@ Create a container
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**create** | [**SpecGenerator**](SpecGenerator.md) | attributes for creating a container | [required] |
+**create** | Option<[**SpecGenerator**](SpecGenerator.md)> | attributes for creating a container |  |
 
 ### Return type
 
-[**models::ContainerCreateResponse**](ContainerCreateResponse.md)
+[**models::ContainerCreate201Response**](ContainerCreate_201_response.md)
 
 ### Authorization
 
@@ -275,7 +269,7 @@ No authorization required
 
 ## container_healthcheck_libpod
 
-> models::HealthCheckResults container_healthcheck_libpod(name)
+> models::ContainerHealthcheckLibpod200Response container_healthcheck_libpod(name)
 Run a container's healthcheck
 
 Execute the defined healthcheck and return information about the results
@@ -289,7 +283,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**models::HealthCheckResults**](HealthCheckResults.md)
+[**models::ContainerHealthcheckLibpod200Response**](ContainerHealthcheckLibpod_200_response.md)
 
 ### Authorization
 
@@ -335,7 +329,7 @@ No authorization required
 
 ## container_inspect_libpod
 
-> models::InspectContainerData container_inspect_libpod(name, size)
+> models::ContainerInspectLibpod200Response container_inspect_libpod(name, size)
 Inspect container
 
 Return low-level information about a container.
@@ -350,7 +344,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**models::InspectContainerData**](InspectContainerData.md)
+[**models::ContainerInspectLibpod200Response**](ContainerInspectLibpod_200_response.md)
 
 ### Authorization
 
@@ -377,7 +371,7 @@ send a signal to a container, defaults to killing the container
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
 **name** | **String** | the name or ID of the container | [required] |
-**signal** | Option<**String**> | signal to be sent to container, either by integer or SIG_ name |  |[default to SIGKILL]
+**signal** | Option<**String**> | signal to be sent to container, either by integer or SIG_ name |  |[default to TERM]
 
 ### Return type
 
@@ -397,7 +391,7 @@ No authorization required
 
 ## container_list_libpod
 
-> Vec<models::ListContainer> container_list_libpod(all, limit, namespace, pod, size, sync, filters)
+> Vec<models::ListContainer> container_list_libpod(all, limit, pod, size, sync, filters)
 List containers
 
 Returns a list of containers
@@ -409,11 +403,10 @@ Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
 **all** | Option<**bool**> | Return all containers. By default, only running containers are shown |  |[default to false]
 **limit** | Option<**i32**> | Return this number of most recently created containers, including non-running ones. |  |
-**namespace** | Option<**bool**> | Include namespace information |  |[default to false]
 **pod** | Option<**bool**> | Ignored. Previously included details on pod name and ID that are currently included by default. |  |[default to false]
 **size** | Option<**bool**> | Return the size of container as fields SizeRw and SizeRootFs. |  |[default to false]
 **sync** | Option<**bool**> | Sync container state with OCI runtime |  |[default to false]
-**filters** | Option<**String**> | A JSON encoded value of the filters (a `map[string][]string`) to process on the containers list. Available filters: - `ancestor`=(`<image-name>[:<tag>]`, `<image id>`, or `<image@digest>`) - `before`=(`<container id>` or `<container name>`) - `expose`=(`<port>[/<proto>]` or `<startport-endport>/[<proto>]`) - `exited=<int>` containers with exit code of `<int>` - `health`=(`starting`, `healthy`, `unhealthy` or `none`) - `id=<ID>` a container's ID - `is-task`=(`true` or `false`) - `label`=(`key` or `\"key=value\"`) of a container label - `name=<name>` a container's name - `network`=(`<network id>` or `<network name>`) - `pod`=(`<pod id>` or `<pod name>`) - `publish`=(`<port>[/<proto>]` or `<startport-endport>/[<proto>]`) - `since`=(`<container id>` or `<container name>`) - `status`=(`created`, `restarting`, `running`, `removing`, `paused`, `exited` or `dead`) - `volume`=(`<volume name>` or `<mount point destination>`)  |  |
+**filters** | Option<**String**> | A JSON encoded value of the filters (a `map[string][]string`) to process on the containers list. Available filters: - `ancestor`=(`<image-name>[:<tag>]`, `<image id>`, or `<image@digest>`) - `before`=(`<container id>` or `<container name>`) - `expose`=(`<port>[/<proto>]` or `<startport-endport>/[<proto>]`) - `exited=<int>` containers with exit code of `<int>` - `health`=(`starting`, `healthy`, `unhealthy` or `none`) - `id=<ID>` a container's ID - `is-task`=(`true` or `false`) - `label`=(`key` or `\"key=value\"`) of an container label - `name=<name>` a container's name - `network`=(`<network id>` or `<network name>`) - `pod`=(`<pod id>` or `<pod name>`) - `publish`=(`<port>[/<proto>]` or `<startport-endport>/[<proto>]`) - `since`=(`<container id>` or `<container name>`) - `status`=(`created`, `restarting`, `running`, `removing`, `paused`, `exited` or `dead`) - `volume`=(`<volume name>` or `<mount point destination>`)  |  |
 
 ### Return type
 
@@ -436,7 +429,7 @@ No authorization required
 > container_logs_libpod(name, follow, stdout, stderr, since, until, timestamps, tail)
 Get container logs
 
-Get stdout and stderr logs from a container.  The stream format is the same as described in the attach endpoint. 
+Get stdout and stderr logs from a container.
 
 ### Parameters
 
@@ -530,7 +523,7 @@ No authorization required
 
 ## container_prune_libpod
 
-> Vec<models::ContainersPruneReportLibpod> container_prune_libpod(filters)
+> Vec<models::LibpodContainersPruneReport> container_prune_libpod(filters)
 Delete stopped containers
 
 Remove containers not in use
@@ -544,7 +537,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**Vec<models::ContainersPruneReportLibpod>**](ContainersPruneReportLibpod.md)
+[**Vec<models::LibpodContainersPruneReport>**](LibpodContainersPruneReport.md)
 
 ### Authorization
 
@@ -652,7 +645,7 @@ No authorization required
 
 ## container_restore_libpod
 
-> container_restore_libpod(name, name2, keep, tcp_established, tcp_close, import, ignore_root_fs, ignore_volumes, ignore_static_ip, ignore_static_mac, file_locks, print_stats, pod)
+> container_restore_libpod(name, name2, keep, leave_running, tcp_established, import, ignore_root_fs, ignore_static_ip, ignore_static_mac, print_stats)
 Restore a container
 
 Restore a container from a checkpoint.
@@ -665,16 +658,13 @@ Name | Type | Description  | Required | Notes
 **name** | **String** | the name or id of the container | [required] |
 **name2** | Option<**String**> | the name of the container when restored from a tar. can only be used with import |  |
 **keep** | Option<**bool**> | keep all temporary checkpoint files |  |
-**tcp_established** | Option<**bool**> | restore a container with established TCP connections |  |
-**tcp_close** | Option<**bool**> | restore a container but close the TCP connections |  |
+**leave_running** | Option<**bool**> | leave the container running after writing checkpoint to disk |  |
+**tcp_established** | Option<**bool**> | checkpoint a container with established TCP connections |  |
 **import** | Option<**bool**> | import the restore from a checkpoint tar.gz |  |
-**ignore_root_fs** | Option<**bool**> | do not include root file-system changes when exporting. can only be used with import |  |
-**ignore_volumes** | Option<**bool**> | do not restore associated volumes. can only be used with import |  |
+**ignore_root_fs** | Option<**bool**> | do not include root file-system changes when exporting |  |
 **ignore_static_ip** | Option<**bool**> | ignore IP address if set statically |  |
 **ignore_static_mac** | Option<**bool**> | ignore MAC address if set statically |  |
-**file_locks** | Option<**bool**> | restore a container with file locks |  |
 **print_stats** | Option<**bool**> | add restore statistics to the returned RestoreReport |  |
-**pod** | Option<**String**> | pod to restore into |  |
 
 ### Return type
 
@@ -781,7 +771,7 @@ No authorization required
 
 ## container_stop_libpod
 
-> container_stop_libpod(name, timeout, ignore)
+> container_stop_libpod(name, all, timeout, ignore)
 Stop a container
 
 ### Parameters
@@ -790,6 +780,7 @@ Stop a container
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
 **name** | **String** | the name or ID of the container | [required] |
+**all** | Option<**bool**> | Stop all containers |  |[default to false]
 **timeout** | Option<**i32**> | number of seconds to wait before killing container |  |[default to 10]
 **ignore** | Option<**bool**> | do not return error if container is already stopped |  |[default to false]
 
@@ -811,7 +802,7 @@ No authorization required
 
 ## container_top_libpod
 
-> models::ContainerTopOkBody container_top_libpod(name, stream, delay, ps_args)
+> models::ContainerTop200Response container_top_libpod(name, stream, delay, ps_args)
 List processes
 
 List processes running inside a container
@@ -824,11 +815,11 @@ Name | Type | Description  | Required | Notes
 **name** | **String** | Name of container to query for processes (As of version 1.xx) | [required] |
 **stream** | Option<**bool**> | when true, repeatedly stream the latest output (As of version 4.0) |  |
 **delay** | Option<**i32**> | if streaming, delay in seconds between updates. Must be >1. (As of version 4.0) |  |[default to 5]
-**ps_args** | Option<[**Vec<String>**](String.md)> | arguments to pass to ps such as aux.  |  |
+**ps_args** | Option<**String**> | arguments to pass to ps such as aux. Requires ps(1) to be installed in the container if no ps(1) compatible AIX descriptors are used.  |  |[default to -ef]
 
 ### Return type
 
-[**models::ContainerTopOkBody**](ContainerTopOKBody.md)
+[**models::ContainerTop200Response**](ContainerTop_200_response.md)
 
 ### Authorization
 
@@ -900,45 +891,12 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 
-## container_update_libpod
-
-> models::ContainerUpdateLibpod201Response container_update_libpod(name, restart_policy, restart_retries, config)
-Updates the configuration of an existing container, allowing changes to resource limits and healthchecks
-
-Updates the configuration of an existing container, allowing changes to resource limits and healthchecks.
-
-### Parameters
-
-
-Name | Type | Description  | Required | Notes
-------------- | ------------- | ------------- | ------------- | -------------
-**name** | **String** | Full or partial ID or full name of the container to update | [required] |
-**restart_policy** | Option<**String**> | New restart policy for the container. |  |
-**restart_retries** | Option<**i32**> | New amount of retries for the container's restart policy. Only allowed if restartPolicy is set to on-failure |  |
-**config** | Option<[**UpdateEntities**](UpdateEntities.md)> | attributes for updating the container |  |
-
-### Return type
-
-[**models::ContainerUpdateLibpod201Response**](ContainerUpdateLibpod_201_response.md)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
-- **Content-Type**: application/json, application/x-tar
-- **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-
 ## container_wait_libpod
 
 > i32 container_wait_libpod(name, condition, interval)
 Wait on a container
 
-Wait on a container to meet a given condition
+Wait on a container to met a given condition
 
 ### Parameters
 
@@ -967,7 +925,7 @@ No authorization required
 
 ## containers_stats_all_libpod
 
-> models::ContainerStats containers_stats_all_libpod(containers, stream, interval)
+> models::ContainersStatsAllLibpod200Response containers_stats_all_libpod(containers, stream, interval)
 Get stats for one or more containers
 
 Return a live stream of resource usage statistics of one or more container. If no container is specified, the statistics of all containers are returned.
@@ -983,7 +941,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**models::ContainerStats**](ContainerStats.md)
+[**models::ContainersStatsAllLibpod200Response**](ContainersStatsAllLibpod_200_response.md)
 
 ### Authorization
 
@@ -999,7 +957,7 @@ No authorization required
 
 ## generate_kube_libpod
 
-> std::path::PathBuf generate_kube_libpod(names, service, r#type, replicas, no_trunc, podman_only)
+> std::path::PathBuf generate_kube_libpod(names, service)
 Generate a Kubernetes YAML file.
 
 Generate Kubernetes YAML based on a pod or container.
@@ -1011,10 +969,6 @@ Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
 **names** | [**Vec<String>**](String.md) | Name or ID of the container or pod. | [required] |
 **service** | Option<**bool**> | Generate YAML for a Kubernetes service object. |  |[default to false]
-**r#type** | Option<**String**> | Generate YAML for the given Kubernetes kind. |  |[default to pod]
-**replicas** | Option<**i32**> | Set the replica number for Deployment kind. |  |[default to 0]
-**no_trunc** | Option<**bool**> | don't truncate annotations to the Kubernetes maximum length of 63 characters |  |[default to false]
-**podman_only** | Option<**bool**> | add podman-only reserved annotations in generated YAML file (cannot be used by Kubernetes) |  |[default to false]
 
 ### Return type
 
@@ -1027,14 +981,14 @@ No authorization required
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: text/vnd.yaml, application/json
+- **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 
 ## generate_systemd_libpod
 
-> std::collections::HashMap<String, String> generate_systemd_libpod(name, use_name, new, no_header, start_timeout, stop_timeout, restart_policy, container_prefix, pod_prefix, separator, restart_sec, wants, after, requires, additional_env_variables)
+> std::collections::HashMap<String, String> generate_systemd_libpod(name, use_name, new, no_header, start_timeout, stop_timeout, restart_policy, container_prefix, pod_prefix, separator, restart_sec, wants, after, requires)
 Generate Systemd Units
 
 Generate Systemd Units based on a pod or container.
@@ -1058,7 +1012,6 @@ Name | Type | Description  | Required | Notes
 **wants** | Option<[**Vec<String>**](String.md)> | Systemd Wants list for the container or pods. |  |[default to []]
 **after** | Option<[**Vec<String>**](String.md)> | Systemd After list for the container or pods. |  |[default to []]
 **requires** | Option<[**Vec<String>**](String.md)> | Systemd Requires list for the container or pods. |  |[default to []]
-**additional_env_variables** | Option<[**Vec<String>**](String.md)> | Set environment variables to the systemd unit files. |  |[default to []]
 
 ### Return type
 
@@ -1078,7 +1031,7 @@ No authorization required
 
 ## image_commit_libpod
 
-> image_commit_libpod(container, author, changes, comment, format, pause, squash, repo, stream, tag)
+> image_commit_libpod(container, repo, tag, comment, author, pause, changes, format)
 Commit
 
 Create a new image from a container
@@ -1089,15 +1042,13 @@ Create a new image from a container
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
 **container** | **String** | the name or ID of a container | [required] |
-**author** | Option<**String**> | author of the image |  |
-**changes** | Option<[**Vec<String>**](String.md)> | instructions to apply while committing in Dockerfile format (i.e. \"CMD=/bin/foo\") |  |
-**comment** | Option<**String**> | commit message |  |
-**format** | Option<**String**> | format of the image manifest and metadata (default \"oci\") |  |
-**pause** | Option<**bool**> | pause the container before committing it |  |
-**squash** | Option<**bool**> | squash the container before committing it |  |
 **repo** | Option<**String**> | the repository name for the created image |  |
-**stream** | Option<**bool**> | output from commit process |  |
 **tag** | Option<**String**> | tag name for the created image |  |
+**comment** | Option<**String**> | commit message |  |
+**author** | Option<**String**> | author of the image |  |
+**pause** | Option<**bool**> | pause the container before committing it |  |
+**changes** | Option<[**Vec<String>**](String.md)> | instructions to apply while committing in Dockerfile format (i.e. \"CMD=/bin/foo\") |  |
+**format** | Option<**String**> | format of the image manifest and metadata (default \"oci\") |  |
 
 ### Return type
 
@@ -1115,54 +1066,16 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 
-## kube_apply_libpod
-
-> std::path::PathBuf kube_apply_libpod(ca_cert_file, kube_config, namespace, service, file, request)
-Apply a podman workload or Kubernetes YAML file.
-
-Deploy a podman container, pod, volume, or Kubernetes yaml to a Kubernetes cluster.
-
-### Parameters
-
-
-Name | Type | Description  | Required | Notes
-------------- | ------------- | ------------- | ------------- | -------------
-**ca_cert_file** | Option<**String**> | Path to the CA cert file for the Kubernetes cluster. |  |
-**kube_config** | Option<**String**> | Path to the kubeconfig file for the Kubernetes cluster. |  |
-**namespace** | Option<**String**> | The namespace to deploy the workload to on the Kubernetes cluster. |  |
-**service** | Option<**bool**> | Create a service object for the container being deployed. |  |
-**file** | Option<**String**> | Path to the Kubernetes yaml file to deploy. |  |
-**request** | Option<**String**> | Kubernetes YAML file. |  |
-
-### Return type
-
-[**std::path::PathBuf**](std::path::PathBuf.md)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
-- **Content-Type**: application/json, application/x-tar
-- **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-
 ## play_kube_down_libpod
 
-> models::PlayKubeReport play_kube_down_libpod(force)
-Remove resources created from kube play
+> models::PlayKubeReport play_kube_down_libpod()
+Remove pods from play kube
 
-Tears down pods, secrets, and volumes defined in a YAML file
+Tears down pods defined in a YAML file
 
 ### Parameters
 
-
-Name | Type | Description  | Required | Notes
-------------- | ------------- | ------------- | ------------- | -------------
-**force** | Option<**bool**> | Remove volumes. |  |[default to false]
+This endpoint does not need any parameter.
 
 ### Return type
 
@@ -1182,34 +1095,22 @@ No authorization required
 
 ## play_kube_libpod
 
-> models::PlayKubeReport play_kube_libpod(content_type, annotations, log_driver, log_options, network, no_hosts, no_trunc, publish_ports, publish_all_ports, replace, service_container, start, static_ips, static_macs, tls_verify, userns, wait, build, request)
+> models::PlayKubeReport play_kube_libpod(network, tls_verify, log_driver, start, static_ips, static_macs, request)
 Play a Kubernetes YAML file.
 
-Create and run pods based on a Kubernetes YAML file.  ### Content-Type  Then endpoint support two Content-Type  - `plain/text` for yaml format  - `application/x-tar` for sending context(s) required for building images  #### Tar format  The tar format must contain a `play.yaml` file at the root that will be used. If the file format requires context to build an image, it uses the image name and check for corresponding folder.  For example, the client sends a tar file with the following structure:  ``` └── content.tar  ├── play.yaml  └── foobar/      └── Containerfile ```  The `play.yaml` is the following, the `foobar` image means we are looking for a context with this name. ``` apiVersion: v1 kind: Pod metadata: name: demo-build-remote spec: containers:  - name: container    image: foobar ``` 
+Create and run pods based on a Kubernetes YAML file (pod or service kind).
 
 ### Parameters
 
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**content_type** | Option<**String**> |  |  |[default to plain/text]
-**annotations** | Option<**String**> | JSON encoded value of annotations (a map[string]string). |  |
-**log_driver** | Option<**String**> | Logging driver for the containers in the pod. |  |
-**log_options** | Option<[**Vec<String>**](String.md)> | logging driver options |  |
 **network** | Option<[**Vec<String>**](String.md)> | USe the network mode or specify an array of networks. |  |
-**no_hosts** | Option<**bool**> | do not setup /etc/hosts file in container |  |[default to false]
-**no_trunc** | Option<**bool**> | use annotations that are not truncated to the Kubernetes maximum length of 63 characters |  |[default to false]
-**publish_ports** | Option<[**Vec<String>**](String.md)> | publish a container's port, or a range of ports, to the host |  |
-**publish_all_ports** | Option<**bool**> | Whether to publish all ports defined in the K8S YAML file (containerPort, hostPort), if false only hostPort will be published |  |
-**replace** | Option<**bool**> | replace existing pods and containers |  |[default to false]
-**service_container** | Option<**bool**> | Starts a service container before all pods. |  |[default to false]
+**tls_verify** | Option<**bool**> | Require HTTPS and verify signatures when contacting registries. |  |[default to true]
+**log_driver** | Option<**String**> | Logging driver for the containers in the pod. |  |
 **start** | Option<**bool**> | Start the pod after creating it. |  |[default to true]
 **static_ips** | Option<[**Vec<String>**](String.md)> | Static IPs used for the pods. |  |
 **static_macs** | Option<[**Vec<String>**](String.md)> | Static MACs used for the pods. |  |
-**tls_verify** | Option<**bool**> | Require HTTPS and verify signatures when contacting registries. |  |[default to true]
-**userns** | Option<**String**> | Set the user namespace mode for the pods. |  |
-**wait** | Option<**bool**> | Clean up all objects created when a SIGTERM is received or pods exit. |  |[default to false]
-**build** | Option<**bool**> | Build the images with corresponding context. |  |
 **request** | Option<**String**> | Kubernetes YAML file. |  |
 
 ### Return type

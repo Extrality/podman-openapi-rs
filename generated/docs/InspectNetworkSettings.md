@@ -17,7 +17,7 @@ Name | Type | Description | Notes
 **link_local_ipv6_address** | Option<**String**> |  | [optional]
 **link_local_ipv6_prefix_len** | Option<**i64**> |  | [optional]
 **mac_address** | Option<**String**> | MacAddress is the MAC address for the interface in this network. | [optional]
-**networks** | Option<[**std::collections::HashMap<String, models::InspectAdditionalNetwork>**](InspectAdditionalNetwork.md)> | Networks contains information on non-default networks this container has joined. It is a map of network name to network information. | [optional]
+**networks** | Option<[**std::collections::HashMap<String, models::InspectAdditionalNetwork>**](InspectAdditionalNetwork.md)> | Networks contains information on non-default CNI networks this container has joined. It is a map of network name to network information. | [optional]
 **ports** | Option<[**std::collections::HashMap<String, Vec<models::InspectHostPort>>**](Vec.md)> |  | [optional]
 **sandbox_id** | Option<**String**> |  | [optional]
 **sandbox_key** | Option<**String**> |  | [optional]

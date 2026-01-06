@@ -19,7 +19,7 @@ Method | HTTP request | Description
 > network_connect(name, create)
 Connect container to network
 
-Connect a container to a network
+Connect a container to a network.  This endpoint is current a no-op
 
 ### Parameters
 
@@ -27,7 +27,7 @@ Connect a container to a network
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
 **name** | **String** | the name of the network | [required] |
-**create** | Option<**models::ConnectOptions**> | attributes for connecting a container to a network |  |
+**create** | Option<[**NetworkCompatConnectRequest**](NetworkCompatConnectRequest.md)> | attributes for connecting a container to a network |  |
 
 ### Return type
 
@@ -47,7 +47,7 @@ No authorization required
 
 ## network_create
 
-> models::NetworkCreate201Response network_create(create)
+> models::NetworkCreate200Response network_create(create)
 Create network
 
 Create a network configuration
@@ -57,11 +57,11 @@ Create a network configuration
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**create** | Option<**models::CreateRequest**> | attributes for creating a network |  |
+**create** | Option<[**NetworkCreateRequest**](NetworkCreateRequest.md)> | attributes for creating a network |  |
 
 ### Return type
 
-[**models::NetworkCreate201Response**](NetworkCreate_201_response.md)
+[**models::NetworkCreate200Response**](NetworkCreate_200_response.md)
 
 ### Authorization
 
@@ -110,7 +110,7 @@ No authorization required
 > network_disconnect(name, create)
 Disconnect container from network
 
-Disconnect a container from a network
+Disconnect a container from a network.  This endpoint is current a no-op
 
 ### Parameters
 
@@ -118,7 +118,7 @@ Disconnect a container from a network
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
 **name** | **String** | the name of the network | [required] |
-**create** | Option<**models::DisconnectOptions**> | attributes for disconnecting a container from a network |  |
+**create** | Option<[**NetworkCompatDisconnectRequest**](NetworkCompatDisconnectRequest.md)> | attributes for disconnecting a container from a network |  |
 
 ### Return type
 
@@ -138,7 +138,7 @@ No authorization required
 
 ## network_inspect
 
-> models::Inspect network_inspect(name, verbose, scope)
+> models::NetworkResource network_inspect(name, verbose, scope)
 Inspect a network
 
 Display low level configuration network
@@ -154,7 +154,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**models::Inspect**](Inspect.md)
+[**models::NetworkResource**](NetworkResource.md)
 
 ### Authorization
 
@@ -170,7 +170,7 @@ No authorization required
 
 ## network_list
 
-> Vec<models::Inspect> network_list(filters)
+> Vec<models::NetworkResource> network_list(filters)
 List networks
 
 Display summary of network configurations
@@ -184,7 +184,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**Vec<models::Inspect>**](Inspect.md)
+[**Vec<models::NetworkResource>**](NetworkResource.md)
 
 ### Authorization
 
@@ -203,7 +203,7 @@ No authorization required
 > models::NetworkPrune200Response network_prune(filters)
 Delete unused networks
 
-Remove networks that do not have containers
+Remove CNI networks that do not have containers
 
 ### Parameters
 

@@ -7,7 +7,7 @@ Name | Type | Description | Notes
 **block_io** | Option<[**models::LinuxBlockIo**](LinuxBlockIO.md)> |  | [optional]
 **cpu** | Option<[**models::LinuxCpu**](LinuxCPU.md)> |  | [optional]
 **devices** | Option<[**Vec<models::LinuxDeviceCgroup>**](LinuxDeviceCgroup.md)> | Devices configures the device allowlist. | [optional]
-**hugepage_limits** | Option<[**Vec<models::LinuxHugepageLimit>**](LinuxHugepageLimit.md)> | Hugetlb limits (in bytes). Default to reservation limits if supported. | [optional]
+**hugepage_limits** | Option<[**Vec<models::LinuxHugepageLimit>**](LinuxHugepageLimit.md)> | Hugetlb limit (in bytes) | [optional]
 **memory** | Option<[**models::LinuxMemory**](LinuxMemory.md)> |  | [optional]
 **network** | Option<[**models::LinuxNetwork**](LinuxNetwork.md)> |  | [optional]
 **pids** | Option<[**models::LinuxPids**](LinuxPids.md)> |  | [optional]

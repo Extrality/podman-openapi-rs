@@ -14,7 +14,7 @@ Method | HTTP request | Description
 
 ## volume_create
 
-> models::Volume volume_create(create)
+> models::VolumeInspect200Response volume_create(create)
 Create a volume
 
 ### Parameters
@@ -22,11 +22,11 @@ Create a volume
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**create** | Option<[**VolumeCreate**](VolumeCreate.md)> | attributes for creating a volume. Note: If a volume by the same name exists, a 201 response with that volume's information will be generated.  |  |
+**create** | Option<**models::VolumeCreateBody**> | attributes for creating a volume. Note: If a volume by the same name exists, a 201 response with that volume's information will be generated.  |  |
 
 ### Return type
 
-[**models::Volume**](Volume.md)
+[**models::VolumeInspect200Response**](VolumeInspect_200_response.md)
 
 ### Authorization
 
@@ -71,7 +71,7 @@ No authorization required
 
 ## volume_inspect
 
-> models::Volume volume_inspect(name)
+> models::VolumeInspect200Response volume_inspect(name)
 Inspect volume
 
 ### Parameters
@@ -83,7 +83,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**models::Volume**](Volume.md)
+[**models::VolumeInspect200Response**](VolumeInspect_200_response.md)
 
 ### Authorization
 
@@ -99,7 +99,7 @@ No authorization required
 
 ## volume_list
 
-> models::ListResponse volume_list(filters)
+> models::VolumeList200Response volume_list(filters)
 List volumes
 
 Returns a list of volume
@@ -113,7 +113,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**models::ListResponse**](ListResponse.md)
+[**models::VolumeList200Response**](VolumeList_200_response.md)
 
 ### Authorization
 
@@ -129,7 +129,7 @@ No authorization required
 
 ## volume_prune
 
-> models::PruneReport volume_prune(filters)
+> models::VolumePrune200Response volume_prune(filters)
 Prune volumes
 
 ### Parameters
@@ -141,7 +141,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**models::PruneReport**](PruneReport.md)
+[**models::VolumePrune200Response**](VolumePrune_200_response.md)
 
 ### Authorization
 

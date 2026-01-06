@@ -44,7 +44,7 @@ No authorization required
 
 ## exec_inspect
 
-> models::InspectExecSession exec_inspect(id)
+> exec_inspect(id)
 Inspect an exec instance
 
 Return low-level information about an exec instance.
@@ -58,7 +58,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**models::InspectExecSession**](InspectExecSession.md)
+ (empty response body)
 
 ### Authorization
 

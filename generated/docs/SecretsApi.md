@@ -6,7 +6,6 @@ Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**secret_create_libpod**](SecretsApi.md#secret_create_libpod) | **POST** /libpod/secrets/create | Create a secret
 [**secret_delete_libpod**](SecretsApi.md#secret_delete_libpod) | **DELETE** /libpod/secrets/{name} | Remove secret
-[**secret_exists_libpod**](SecretsApi.md#secret_exists_libpod) | **GET** /libpod/secrets/{name}/exists | Secret exists
 [**secret_inspect_libpod**](SecretsApi.md#secret_inspect_libpod) | **GET** /libpod/secrets/{name}/json | Inspect secret
 [**secret_list_libpod**](SecretsApi.md#secret_list_libpod) | **GET** /libpod/secrets/json | List secrets
 
@@ -14,7 +13,7 @@ Method | HTTP request | Description
 
 ## secret_create_libpod
 
-> models::ContainerUpdateLibpod201Response secret_create_libpod(name, driver, driveropts, labels, request)
+> models::SecretCreateLibpod201Response secret_create_libpod(name, driver, request)
 Create a secret
 
 ### Parameters
@@ -24,13 +23,11 @@ Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
 **name** | **String** | User-defined name of the secret. | [required] |
 **driver** | Option<**String**> | Secret driver |  |[default to file]
-**driveropts** | Option<**String**> | Secret driver options |  |
-**labels** | Option<**String**> | Labels on the secret |  |
 **request** | Option<**String**> | Secret |  |
 
 ### Return type
 
-[**models::ContainerUpdateLibpod201Response**](ContainerUpdateLibpod_201_response.md)
+[**models::SecretCreateLibpod201Response**](SecretCreateLibpod_201_response.md)
 
 ### Authorization
 
@@ -73,37 +70,9 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 
-## secret_exists_libpod
-
-> secret_exists_libpod(name)
-Secret exists
-
-### Parameters
-
-
-Name | Type | Description  | Required | Notes
-------------- | ------------- | ------------- | ------------- | -------------
-**name** | **String** | the name or ID of the secret | [required] |
-
-### Return type
-
- (empty response body)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
-- **Content-Type**: Not defined
-- **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-
 ## secret_inspect_libpod
 
-> models::SecretInfoReport secret_inspect_libpod(name, showsecret)
+> models::SecretInfoReport secret_inspect_libpod(name)
 Inspect secret
 
 ### Parameters
@@ -112,7 +81,6 @@ Inspect secret
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
 **name** | **String** | the name or ID of the secret | [required] |
-**showsecret** | Option<**bool**> | Display Secret |  |[default to false]
 
 ### Return type
 
@@ -132,17 +100,14 @@ No authorization required
 
 ## secret_list_libpod
 
-> Vec<models::SecretInfoReport> secret_list_libpod(filters)
+> Vec<models::SecretInfoReport> secret_list_libpod()
 List secrets
 
 Returns a list of secrets
 
 ### Parameters
 
-
-Name | Type | Description  | Required | Notes
-------------- | ------------- | ------------- | ------------- | -------------
-**filters** | Option<**String**> | JSON encoded value of the filters (a `map[string][]string`) to process on the secrets list. Currently available filters:   - `name=[name]` Matches secrets name (accepts regex).   - `id=[id]` Matches for full or partial ID.  |  |
+This endpoint does not need any parameter.
 
 ### Return type
 

@@ -6,8 +6,7 @@ Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**generate_kube_libpod**](PodsApi.md#generate_kube_libpod) | **GET** /libpod/generate/kube | Generate a Kubernetes YAML file.
 [**generate_systemd_libpod**](PodsApi.md#generate_systemd_libpod) | **GET** /libpod/generate/{name}/systemd | Generate Systemd Units
-[**kube_apply_libpod**](PodsApi.md#kube_apply_libpod) | **POST** /libpod/kube/apply | Apply a podman workload or Kubernetes YAML file.
-[**play_kube_down_libpod**](PodsApi.md#play_kube_down_libpod) | **DELETE** /libpod/play/kube | Remove resources created from kube play
+[**play_kube_down_libpod**](PodsApi.md#play_kube_down_libpod) | **DELETE** /libpod/play/kube | Remove pods from play kube
 [**play_kube_libpod**](PodsApi.md#play_kube_libpod) | **POST** /libpod/play/kube | Play a Kubernetes YAML file.
 [**pod_create_libpod**](PodsApi.md#pod_create_libpod) | **POST** /libpod/pods/create | Create a pod
 [**pod_delete_libpod**](PodsApi.md#pod_delete_libpod) | **DELETE** /libpod/pods/{name} | Remove pod
@@ -19,7 +18,7 @@ Method | HTTP request | Description
 [**pod_prune_libpod**](PodsApi.md#pod_prune_libpod) | **POST** /libpod/pods/prune | Prune unused pods
 [**pod_restart_libpod**](PodsApi.md#pod_restart_libpod) | **POST** /libpod/pods/{name}/restart | Restart a pod
 [**pod_start_libpod**](PodsApi.md#pod_start_libpod) | **POST** /libpod/pods/{name}/start | Start a pod
-[**pod_stats_all_libpod**](PodsApi.md#pod_stats_all_libpod) | **GET** /libpod/pods/stats | Statistics for one or more pods
+[**pod_stats_all_libpod**](PodsApi.md#pod_stats_all_libpod) | **GET** /libpod/pods/stats | Get stats for one or more pods
 [**pod_stop_libpod**](PodsApi.md#pod_stop_libpod) | **POST** /libpod/pods/{name}/stop | Stop a pod
 [**pod_top_libpod**](PodsApi.md#pod_top_libpod) | **GET** /libpod/pods/{name}/top | List processes
 [**pod_unpause_libpod**](PodsApi.md#pod_unpause_libpod) | **POST** /libpod/pods/{name}/unpause | Unpause a pod
@@ -28,7 +27,7 @@ Method | HTTP request | Description
 
 ## generate_kube_libpod
 
-> std::path::PathBuf generate_kube_libpod(names, service, r#type, replicas, no_trunc, podman_only)
+> std::path::PathBuf generate_kube_libpod(names, service)
 Generate a Kubernetes YAML file.
 
 Generate Kubernetes YAML based on a pod or container.
@@ -40,10 +39,6 @@ Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
 **names** | [**Vec<String>**](String.md) | Name or ID of the container or pod. | [required] |
 **service** | Option<**bool**> | Generate YAML for a Kubernetes service object. |  |[default to false]
-**r#type** | Option<**String**> | Generate YAML for the given Kubernetes kind. |  |[default to pod]
-**replicas** | Option<**i32**> | Set the replica number for Deployment kind. |  |[default to 0]
-**no_trunc** | Option<**bool**> | don't truncate annotations to the Kubernetes maximum length of 63 characters |  |[default to false]
-**podman_only** | Option<**bool**> | add podman-only reserved annotations in generated YAML file (cannot be used by Kubernetes) |  |[default to false]
 
 ### Return type
 
@@ -56,14 +51,14 @@ No authorization required
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: text/vnd.yaml, application/json
+- **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 
 ## generate_systemd_libpod
 
-> std::collections::HashMap<String, String> generate_systemd_libpod(name, use_name, new, no_header, start_timeout, stop_timeout, restart_policy, container_prefix, pod_prefix, separator, restart_sec, wants, after, requires, additional_env_variables)
+> std::collections::HashMap<String, String> generate_systemd_libpod(name, use_name, new, no_header, start_timeout, stop_timeout, restart_policy, container_prefix, pod_prefix, separator, restart_sec, wants, after, requires)
 Generate Systemd Units
 
 Generate Systemd Units based on a pod or container.
@@ -87,7 +82,6 @@ Name | Type | Description  | Required | Notes
 **wants** | Option<[**Vec<String>**](String.md)> | Systemd Wants list for the container or pods. |  |[default to []]
 **after** | Option<[**Vec<String>**](String.md)> | Systemd After list for the container or pods. |  |[default to []]
 **requires** | Option<[**Vec<String>**](String.md)> | Systemd Requires list for the container or pods. |  |[default to []]
-**additional_env_variables** | Option<[**Vec<String>**](String.md)> | Set environment variables to the systemd unit files. |  |[default to []]
 
 ### Return type
 
@@ -105,54 +99,16 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 
-## kube_apply_libpod
-
-> std::path::PathBuf kube_apply_libpod(ca_cert_file, kube_config, namespace, service, file, request)
-Apply a podman workload or Kubernetes YAML file.
-
-Deploy a podman container, pod, volume, or Kubernetes yaml to a Kubernetes cluster.
-
-### Parameters
-
-
-Name | Type | Description  | Required | Notes
-------------- | ------------- | ------------- | ------------- | -------------
-**ca_cert_file** | Option<**String**> | Path to the CA cert file for the Kubernetes cluster. |  |
-**kube_config** | Option<**String**> | Path to the kubeconfig file for the Kubernetes cluster. |  |
-**namespace** | Option<**String**> | The namespace to deploy the workload to on the Kubernetes cluster. |  |
-**service** | Option<**bool**> | Create a service object for the container being deployed. |  |
-**file** | Option<**String**> | Path to the Kubernetes yaml file to deploy. |  |
-**request** | Option<**String**> | Kubernetes YAML file. |  |
-
-### Return type
-
-[**std::path::PathBuf**](std::path::PathBuf.md)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
-- **Content-Type**: application/json, application/x-tar
-- **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-
 ## play_kube_down_libpod
 
-> models::PlayKubeReport play_kube_down_libpod(force)
-Remove resources created from kube play
+> models::PlayKubeReport play_kube_down_libpod()
+Remove pods from play kube
 
-Tears down pods, secrets, and volumes defined in a YAML file
+Tears down pods defined in a YAML file
 
 ### Parameters
 
-
-Name | Type | Description  | Required | Notes
-------------- | ------------- | ------------- | ------------- | -------------
-**force** | Option<**bool**> | Remove volumes. |  |[default to false]
+This endpoint does not need any parameter.
 
 ### Return type
 
@@ -172,34 +128,22 @@ No authorization required
 
 ## play_kube_libpod
 
-> models::PlayKubeReport play_kube_libpod(content_type, annotations, log_driver, log_options, network, no_hosts, no_trunc, publish_ports, publish_all_ports, replace, service_container, start, static_ips, static_macs, tls_verify, userns, wait, build, request)
+> models::PlayKubeReport play_kube_libpod(network, tls_verify, log_driver, start, static_ips, static_macs, request)
 Play a Kubernetes YAML file.
 
-Create and run pods based on a Kubernetes YAML file.  ### Content-Type  Then endpoint support two Content-Type  - `plain/text` for yaml format  - `application/x-tar` for sending context(s) required for building images  #### Tar format  The tar format must contain a `play.yaml` file at the root that will be used. If the file format requires context to build an image, it uses the image name and check for corresponding folder.  For example, the client sends a tar file with the following structure:  ``` └── content.tar  ├── play.yaml  └── foobar/      └── Containerfile ```  The `play.yaml` is the following, the `foobar` image means we are looking for a context with this name. ``` apiVersion: v1 kind: Pod metadata: name: demo-build-remote spec: containers:  - name: container    image: foobar ``` 
+Create and run pods based on a Kubernetes YAML file (pod or service kind).
 
 ### Parameters
 
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**content_type** | Option<**String**> |  |  |[default to plain/text]
-**annotations** | Option<**String**> | JSON encoded value of annotations (a map[string]string). |  |
-**log_driver** | Option<**String**> | Logging driver for the containers in the pod. |  |
-**log_options** | Option<[**Vec<String>**](String.md)> | logging driver options |  |
 **network** | Option<[**Vec<String>**](String.md)> | USe the network mode or specify an array of networks. |  |
-**no_hosts** | Option<**bool**> | do not setup /etc/hosts file in container |  |[default to false]
-**no_trunc** | Option<**bool**> | use annotations that are not truncated to the Kubernetes maximum length of 63 characters |  |[default to false]
-**publish_ports** | Option<[**Vec<String>**](String.md)> | publish a container's port, or a range of ports, to the host |  |
-**publish_all_ports** | Option<**bool**> | Whether to publish all ports defined in the K8S YAML file (containerPort, hostPort), if false only hostPort will be published |  |
-**replace** | Option<**bool**> | replace existing pods and containers |  |[default to false]
-**service_container** | Option<**bool**> | Starts a service container before all pods. |  |[default to false]
+**tls_verify** | Option<**bool**> | Require HTTPS and verify signatures when contacting registries. |  |[default to true]
+**log_driver** | Option<**String**> | Logging driver for the containers in the pod. |  |
 **start** | Option<**bool**> | Start the pod after creating it. |  |[default to true]
 **static_ips** | Option<[**Vec<String>**](String.md)> | Static IPs used for the pods. |  |
 **static_macs** | Option<[**Vec<String>**](String.md)> | Static MACs used for the pods. |  |
-**tls_verify** | Option<**bool**> | Require HTTPS and verify signatures when contacting registries. |  |[default to true]
-**userns** | Option<**String**> | Set the user namespace mode for the pods. |  |
-**wait** | Option<**bool**> | Clean up all objects created when a SIGTERM is received or pods exit. |  |[default to false]
-**build** | Option<**bool**> | Build the images with corresponding context. |  |
 **request** | Option<**String**> | Kubernetes YAML file. |  |
 
 ### Return type
@@ -307,7 +251,7 @@ No authorization required
 
 ## pod_inspect_libpod
 
-> models::InspectPodData pod_inspect_libpod(name)
+> models::PodInspectLibpod200Response pod_inspect_libpod(name)
 Inspect pod
 
 ### Parameters
@@ -319,7 +263,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**models::InspectPodData**](InspectPodData.md)
+[**models::PodInspectLibpod200Response**](PodInspectLibpod_200_response.md)
 
 ### Authorization
 
@@ -503,8 +447,8 @@ No authorization required
 
 ## pod_stats_all_libpod
 
-> Vec<models::PodStatsReport> pod_stats_all_libpod(all, names_or_ids)
-Statistics for one or more pods
+> models::ContainerTop200Response pod_stats_all_libpod(all, names_or_ids)
+Get stats for one or more pods
 
 Display a live stream of resource usage statistics for the containers in one or more pods
 
@@ -518,7 +462,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**Vec<models::PodStatsReport>**](PodStatsReport.md)
+[**models::ContainerTop200Response**](ContainerTop_200_response.md)
 
 ### Authorization
 
@@ -563,7 +507,7 @@ No authorization required
 
 ## pod_top_libpod
 
-> models::PodTopOkBody pod_top_libpod(name, stream, delay, ps_args)
+> models::ContainerTop200Response pod_top_libpod(name, stream, delay, ps_args)
 List processes
 
 List processes running inside a pod
@@ -576,11 +520,11 @@ Name | Type | Description  | Required | Notes
 **name** | **String** | Name of pod to query for processes | [required] |
 **stream** | Option<**bool**> | when true, repeatedly stream the latest output (As of version 4.0) |  |
 **delay** | Option<**i32**> | if streaming, delay in seconds between updates. Must be >1. (As of version 4.0) |  |[default to 5]
-**ps_args** | Option<**String**> | arguments to pass to ps such as aux.  |  |
+**ps_args** | Option<**String**> | arguments to pass to ps such as aux. Requires ps(1) to be installed in the container if no ps(1) compatible AIX descriptors are used.  |  |[default to -ef]
 
 ### Return type
 
-[**models::PodTopOkBody**](PodTopOKBody.md)
+[**models::ContainerTop200Response**](ContainerTop_200_response.md)
 
 ### Authorization
 

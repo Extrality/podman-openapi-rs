@@ -12,7 +12,6 @@ Method | HTTP request | Description
 [**network_inspect_libpod**](NetworksApi.md#network_inspect_libpod) | **GET** /libpod/networks/{name}/json | Inspect a network
 [**network_list_libpod**](NetworksApi.md#network_list_libpod) | **GET** /libpod/networks/json | List networks
 [**network_prune_libpod**](NetworksApi.md#network_prune_libpod) | **POST** /libpod/networks/prune | Delete unused networks
-[**network_update_libpod**](NetworksApi.md#network_update_libpod) | **POST** /libpod/networks/{name}/update | Update existing podman network
 
 
 
@@ -29,7 +28,7 @@ Connect a container to a network.
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
 **name** | **String** | the name of the network | [required] |
-**create** | Option<**models::NetworkConnectOptions**> | attributes for connecting a container to a network |  |
+**create** | Option<[**NetworkConnectRequest**](NetworkConnectRequest.md)> | attributes for connecting a container to a network |  |
 
 ### Return type
 
@@ -82,7 +81,7 @@ No authorization required
 > Vec<models::NetworkRmReport> network_delete_libpod(name, force)
 Remove a network
 
-Remove a configured network
+Remove a CNI configured network
 
 ### Parameters
 
@@ -121,7 +120,7 @@ Disconnect a container from a network.
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
 **name** | **String** | the name of the network | [required] |
-**create** | Option<**models::DisconnectOptions**> | attributes for disconnecting a container from a network |  |
+**create** | Option<[**NetworkCompatDisconnectRequest**](NetworkCompatDisconnectRequest.md)> | attributes for disconnecting a container from a network |  |
 
 ### Return type
 
@@ -171,10 +170,10 @@ No authorization required
 
 ## network_inspect_libpod
 
-> models::NetworkInspectReport network_inspect_libpod(name)
+> models::Network network_inspect_libpod(name)
 Inspect a network
 
-Display configuration for a network. 
+Display low level configuration for a CNI network.   - In a 200 response, all of the fields named Bytes are returned as a Base64 encoded string. 
 
 ### Parameters
 
@@ -185,7 +184,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**models::NetworkInspectReport**](NetworkInspectReport.md)
+[**models::Network**](Network.md)
 
 ### Authorization
 
@@ -211,7 +210,7 @@ Display summary of network configurations.   - In a 200 response, all of the fie
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**filters** | Option<**String**> | JSON encoded value of the filters (a `map[string][]string`) to process on the network list. Available filters:   - `name=[name]` Matches network name (accepts regex).   - `id=[id]` Matches for full or partial ID.   - `driver=[driver]` Only bridge is supported.   - `label=[key]` or `label=[key=value]` Matches networks based on the presence of a label alone or a label and a value.   - `until=[timestamp]` Matches all networks that were created before the given timestamp.  |  |
+**filters** | Option<**String**> | JSON encoded value of the filters (a `map[string][]string`) to process on the network list. Available filters:   - `name=[name]` Matches network name (accepts regex).   - `id=[id]` Matches for full or partial ID.   - `driver=[driver]` Only bridge is supported.   - `label=[key]` or `label=[key=value]` Matches networks based on the presence of a label alone or a label and a value.   - `until=[timestamp]` Matches all networks that were create before the given timestamp.  |  |
 
 ### Return type
 
@@ -234,7 +233,7 @@ No authorization required
 > Vec<models::NetworkPruneReport> network_prune_libpod(filters)
 Delete unused networks
 
-Remove networks that do not have containers
+Remove CNI networks that do not have containers
 
 ### Parameters
 
@@ -254,37 +253,6 @@ No authorization required
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-
-## network_update_libpod
-
-> network_update_libpod(name, update)
-Update existing podman network
-
-Update existing podman network
-
-### Parameters
-
-
-Name | Type | Description  | Required | Notes
-------------- | ------------- | ------------- | ------------- | -------------
-**name** | **String** | the name or ID of the network | [required] |
-**update** | Option<**models::NetworkUpdateOptions**> | attributes for updating a netavark network |  |
-
-### Return type
-
- (empty response body)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
-- **Content-Type**: application/json, application/x-tar
 - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
